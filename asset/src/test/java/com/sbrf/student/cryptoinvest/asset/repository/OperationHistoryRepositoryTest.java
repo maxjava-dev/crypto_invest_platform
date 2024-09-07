@@ -1,4 +1,4 @@
-package com.sbrf.student.cryptoinvest.asset.tests;
+package com.sbrf.student.cryptoinvest.asset.repository;
 
 import com.sbrf.student.cryptoinvest.asset.model.Asset;
 import com.sbrf.student.cryptoinvest.asset.model.OperationHistory;
@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Тестирование {@link OperationHistoryRepository}
  */
+// TODO: В следующем комите подробней рассмотреть историю операций
 @DataJpaTest
 public class OperationHistoryRepositoryTest {
 
@@ -65,7 +66,6 @@ public class OperationHistoryRepositoryTest {
 
     /**
      * Проверка метода {@link OperationHistoryRepository#findByAsset_AssetId})
-     *
      * Получение списка операций с существующим активом
      */
     @Test

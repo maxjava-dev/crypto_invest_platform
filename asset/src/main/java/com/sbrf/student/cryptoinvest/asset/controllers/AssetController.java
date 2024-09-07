@@ -1,8 +1,9 @@
-package com.sbrf.student.cryptoinvest.asset.rest;
+package com.sbrf.student.cryptoinvest.asset.controllers;
 
 import com.sbrf.student.cryptoinvest.asset.model.*;
 import com.sbrf.student.cryptoinvest.asset.service.AssetService;
 import lombok.*;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +13,6 @@ import java.util.*;
 /**
  * Контроллер для работы с активами
  */
-// TODO: Проверка на валидацию в контроллере реализовать, в сервисе проверка на счет и активы
 @RestController
 @RequestMapping("/assets")
 @RequiredArgsConstructor
@@ -54,11 +54,15 @@ public class AssetController {
      * @param userid - id пользователя
      * @param quantity - количество актива для операции
      * @param operationType - тип операции (BUY или SELL)
-     * @throws Exception
+     * @throws IllegalArgumentException
      */
     private void performOperation(Long cryptoid, Long userid, BigDecimal quantity, OperationType operationType)
             throws Exception {
-        switch (operationType) { // будет ли регистрозависим enum, проверить
+        if (operationType == null || !EnumUtils.isValidEnum(OperationType.class, operationType.name())) {
+            throw new IllegalArgumentException("Неверный тип операции: " + operationType);
+        }
+
+        switch (operationType) {
             case buy:
                 assetService.buyAsset(cryptoid, userid, quantity);
                 break;
@@ -66,11 +70,12 @@ public class AssetController {
                 assetService.sellAsset(cryptoid, userid, quantity);
                 break;
             default:
-                // TODO: потом свои исключения и подробную обработку и валидацию
-                throw new Exception("Неверный тип операции: " + operationType);
+                throw new IllegalArgumentException("Неверный тип операции: " + operationType);
         }
     }
 
     // TODO: методы для истории транзакций
     //  Написать тесты
+    //  Дополнительная обработка исключений и валидация
+    // TODO: Проверка на валидацию в контроллере реализовать, в сервисе проверка на счет и активы
 }
