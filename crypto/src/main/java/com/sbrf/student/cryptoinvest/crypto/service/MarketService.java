@@ -14,4 +14,9 @@ public interface MarketService {
      */
     List<Cryptocurrency> getAllCurrencies();
 
+    /**
+     * @param cryptoId ID криптовалюты
+     * @return цена криптовалюты
+     */
+    List<Cryptocurrency> getPrice(Long cryptoId);
 }

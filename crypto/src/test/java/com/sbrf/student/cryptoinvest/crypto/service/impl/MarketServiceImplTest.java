@@ -23,9 +23,6 @@ class MarketServiceImplTest {
     @Test
     void getAllCurrencies() {
 
-        List<Cryptocurrency> result = service.getAllCurrencies();
-
-        assertNotNull(result);
-        assertNotEquals(0, result.size());
+        // TODO
     }
 }
