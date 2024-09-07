@@ -14,6 +14,7 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
 
     /**
      * Получить список активов пользователя, которыми он в данный момент владеет
+     *
      * @param userId ID пользователя
      * @return список активов пользователя, которыми он в данный момент владеет
      */
@@ -21,11 +22,10 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
 
     /**
      * Нахождение конкретного актива принадлежащего пользователю
+     *
      * @param userId ID пользователя
      * @param cryptoId ID актива
      * @return актив принадлежащий пользователю
      */
     Asset findByUserIdAndCryptoId(Long userId, Long cryptoId);
-
-    // TODO: Получить список(историю) операций по конкретному пользователю
 }

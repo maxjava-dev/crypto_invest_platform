@@ -12,6 +12,7 @@ public interface AssetService {
 
     /**
      * Получение списка активов пользователя
+     *
      * @param userId ID пользователя, для которого нужно получить список активов
      * @return Список активов пользователя
      */
@@ -19,6 +20,7 @@ public interface AssetService {
 
     /**
      * Покупка актива пользователя
+     *
      * @param cryptoId ID приобретаемого актива
      * @param userId ID пользователя
      * @param quantity количество актива, которое нужно приобрести
@@ -27,6 +29,7 @@ public interface AssetService {
 
     /**
      * Продажа актива пользователя
+     *
      * @param cryptoId ID актива, который нужно продать
      * @param userId ID пользователя
      * @param quantity количество актива которое нужно продать
