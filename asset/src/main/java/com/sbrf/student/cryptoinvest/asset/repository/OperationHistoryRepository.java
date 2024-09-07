@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * Репозиторий для работы с историей операций пользователя
+ * TODO: реализовать в следующем коммите
  */
 @Repository
 public interface OperationHistoryRepository extends JpaRepository<OperationHistory, Long> {

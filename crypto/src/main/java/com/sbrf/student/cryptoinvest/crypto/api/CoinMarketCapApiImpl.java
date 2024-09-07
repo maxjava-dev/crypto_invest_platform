@@ -82,7 +82,8 @@ public class CoinMarketCapApiImpl implements CoinMarketCapApi {
 
     private HttpEntity<Void> getRequestEntity() {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-CMC_PRO_API_KEY", env.getProperty(API_KEY_ENV_NAME));
+       // headers.set("X-CMC_PRO_API_KEY", env.getProperty(API_KEY_ENV_NAME)); tyt
+        headers.set("X-CMC_PRO_API_KEY", API_KEY);
         return new HttpEntity<>(headers);
     }
 
@@ -90,7 +91,7 @@ public class CoinMarketCapApiImpl implements CoinMarketCapApi {
         return ids.stream().map(Object::toString).collect(Collectors.joining(","));
     }
 
-    // private final String API_KEY = "14d723cf-09a1-42e5-8fa5-1a8e38dc296b";
+    private final String API_KEY = "14d723cf-09a1-42e5-8fa5-1a8e38dc296b"; /// tyt
     private final String API_KEY_ENV_NAME = "COIN_MARKET_CAP_API_KEY";
     private final String BASE_API_URL = "https://pro-api.coinmarketcap.com/";
 }
