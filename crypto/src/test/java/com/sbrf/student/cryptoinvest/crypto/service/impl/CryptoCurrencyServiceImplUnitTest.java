@@ -1,0 +1,130 @@
+package com.sbrf.student.cryptoinvest.crypto.service.impl;
+
+import com.sbrf.student.cryptoinvest.crypto.api.CoinMarketCapApi;
+import com.sbrf.student.cryptoinvest.crypto.model.data.*;
+import com.sbrf.student.cryptoinvest.crypto.model.entity.CryptoCurrencyEntity;
+import com.sbrf.student.cryptoinvest.crypto.repository.CryptoCurrencyRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
+
+/**
+ * Юнит тест на {@link CryptoCurrencyServiceImpl}.
+ */
+class CryptoCurrencyServiceImplUnitTest {
+
+    @Mock
+    CoinMarketCapApi api;
+
+    @Mock
+    CryptoCurrencyRepository repository;
+
+    private CryptoCurrencyServiceImpl underTest;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        underTest = new CryptoCurrencyServiceImpl(api, repository);
+        when(api.getIdList(50)).thenReturn(
+                   new CoinMarketCapIdList(
+                           List.of(
+                                    new CoinMarketCapIdListElement(1L),
+                                    new CoinMarketCapIdListElement(2L),
+                                    new CoinMarketCapIdListElement(3L)
+                           )
+                   )
+        );
+        when(api.getMetadata(any())).thenReturn(
+                new CoinMarketCapMetadata(
+                        Map.of(
+                                "1", new CoinMarketCapMetadataElement(1L, "BTC", "Bitcoin", "desc1", "pic1"),
+                                "2", new CoinMarketCapMetadataElement(2L, "ETH", "Etherium", "desc2", "pic2"),
+                                "3", new CoinMarketCapMetadataElement(3L, "USDT", "Tether", "desc3", "pic3")
+                        )
+                )
+        );
+        when(api.getPriceList(any())).thenReturn(
+                new CoinMarketCapPriceList(
+                        Map.of(
+                                "1", new CoinMarketCapPriceElement(1L, Map.of("USD", new CoinMarketCapPriceQuote(BigDecimal.TEN))),
+                                "2", new CoinMarketCapPriceElement(2L, Map.of("USD", new CoinMarketCapPriceQuote(BigDecimal.ZERO))),
+                                "3", new CoinMarketCapPriceElement(3L, Map.of("USD", new CoinMarketCapPriceQuote(BigDecimal.ONE)))
+                        )
+                )
+        );
+    }
+
+    @Test
+    void getAllCryptoCurrencies() {
+        when(repository.findAll()).thenReturn(List.of());
+        when(repository.saveAll(any())).thenAnswer(i -> {
+            var entityList = (List<CryptoCurrencyEntity>) i.getArguments()[0];
+            Long id = 0L;
+            for (CryptoCurrencyEntity entity : entityList) {
+                id += 1000L;
+                entity.setId(id);
+            }
+            return entityList;
+        });
+
+        var result = underTest.getAllCryptoCurrencies();
+        var result2 = underTest.getAllCryptoCurrencies();
+
+        assertNotNull(result);
+        assertEquals(3, result.size());
+
+        assertEquals("BTC", result.get(0).getSymbol());
+        assertEquals("Bitcoin", result.get(0).getName());
+        assertEquals("desc1", result.get(0).getDescription());
+        assertEquals("pic1", result.get(0).getLogo());
+        assertEquals(BigDecimal.TEN, result.get(0).getPrice());
+
+        assertEquals("ETH", result.get(1).getSymbol());
+        assertEquals("Etherium", result.get(1).getName());
+        assertEquals("desc2", result.get(1).getDescription());
+        assertEquals("pic2", result.get(1).getLogo());
+        assertEquals(BigDecimal.ZERO, result.get(1).getPrice());
+
+        assertEquals("USDT", result.get(2).getSymbol());
+        assertEquals("Tether", result.get(2).getName());
+        assertEquals("desc3", result.get(2).getDescription());
+        assertEquals("pic3", result.get(2).getLogo());
+        assertEquals(BigDecimal.ONE, result.get(2).getPrice());
+
+        assertEquals(result, result2);
+
+        verify(api, times(2)).getPriceList(any());
+        verify(api, times(1)).getIdList(50);
+        verify(api, times(1)).getMetadata(any());
+    }
+
+    @Test
+    void getCryptoCurrency() {
+        var entity = new CryptoCurrencyEntity(1000L, 1L, "BTC", "Bitcoin", "desc1", "pic1");
+
+        when(repository.findAll()).thenReturn(List.of(entity));
+
+        var result = underTest.getCryptoCurrency(1000L);
+
+        assertNotNull(result);
+
+        assertEquals("BTC", result.getSymbol());
+        assertEquals("Bitcoin", result.getName());
+        assertEquals("desc1", result.getDescription());
+        assertEquals("pic1", result.getLogo());
+        assertEquals(BigDecimal.TEN, result.getPrice());
+
+        verify(api, times(1)).getPriceList(any());
+        verify(api, times(0)).getIdList(50);
+        verify(api, times(0)).getMetadata(any());
+    }
+}

@@ -1,5 +1,6 @@
 package com.sbrf.student.cryptoinvest.crypto.model.data;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class CoinMarketCapIdListElement {
     Long id;
 }

@@ -1,7 +1,5 @@
 package com.sbrf.student.cryptoinvest.crypto.api;
 
-import com.sbrf.student.cryptoinvest.crypto.service.MarketService;
-import com.sbrf.student.cryptoinvest.crypto.service.impl.MarketServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
