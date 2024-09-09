@@ -27,7 +27,7 @@ function validateForm() {
         passwordErrorDiv.textContent = "Пароль должен содержать не менее 5 символов";
         passwordErrorDiv.style.display = "block";
         success = false;
-    } else if (username.length > 20) {
+    } else if (password.length > 20) {
         passwordErrorDiv.textContent = "Пароль должен содержать не более 20 символов";
         passwordErrorDiv.style.display = "block";
         success = false;

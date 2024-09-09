@@ -37,6 +37,9 @@
                         <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
                     </div>
                     <p class="small">* - обязательно для заполнения</p>
+                    <div class="form-group" th:if="${serverError}">
+                        <p style="color:red" class="small">Возникла ошибка при регистрации, попробуйте позже</p>
+                    </div>
                 </form>
             </div>
         </div>
