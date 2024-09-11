@@ -13,5 +13,9 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CoinMarketCapMetadata {
+
+    /**
+     * Соответствие: ИД криптовалюты - метаданные
+     */
     Map<String, CoinMarketCapMetadataElement> data;
 }

@@ -13,5 +13,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CoinMarketCapPriceQuote {
+    /**
+     * Цена
+     */
     BigDecimal price;
 }

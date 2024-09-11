@@ -13,6 +13,13 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CoinMarketCapPriceElement {
+    /**
+     * Идентификатор криптовалюты
+     */
     Long id;
+
+    /**
+     * Соответствие: код базовой валюты (USD) - данные о цене
+     */
     Map<String, CoinMarketCapPriceQuote> quote;
 }

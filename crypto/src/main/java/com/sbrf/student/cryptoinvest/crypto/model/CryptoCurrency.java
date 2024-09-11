@@ -26,20 +26,20 @@ public class CryptoCurrency {
     /**
      * Название.
      */
-    String name;
+    private String name;
 
     /**
      * Описание.
      */
-    String description;
+    private String description;
 
     /**
      * Url на картинку.
      */
-    String logo;
+    private String logo;
 
     /**
      * Цена в USD.
      */
-    BigDecimal price;
+    private BigDecimal price;
 }
