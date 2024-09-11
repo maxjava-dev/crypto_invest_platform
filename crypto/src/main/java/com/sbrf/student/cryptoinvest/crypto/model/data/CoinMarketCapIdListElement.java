@@ -12,5 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CoinMarketCapIdListElement {
+    /**
+     * Идентификатор криптовалюты
+     */
     Long id;
 }

@@ -11,7 +11,7 @@ import javax.persistence.*;
  */
 @Data
 @Entity
-@Table(name = "users")
+@Table(name = "crypto")
 @NoArgsConstructor
 @AllArgsConstructor
 public class CryptoCurrencyEntity {

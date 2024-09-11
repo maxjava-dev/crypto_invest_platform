@@ -13,5 +13,8 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CoinMarketCapPriceList {
+    /**
+     * Соответствие: ИД криптовалюты - данные о ценах
+     */
     Map<String, CoinMarketCapPriceElement> data;
 }

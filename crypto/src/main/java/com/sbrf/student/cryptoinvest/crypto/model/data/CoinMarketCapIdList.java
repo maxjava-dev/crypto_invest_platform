@@ -13,5 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CoinMarketCapIdList {
+    /**
+     * Список данных об идентификаторах криптовалют
+     */
     List<CoinMarketCapIdListElement> data;
 }
