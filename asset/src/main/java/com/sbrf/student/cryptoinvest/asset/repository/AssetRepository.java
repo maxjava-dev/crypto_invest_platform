@@ -11,10 +11,21 @@ import java.util.List;
  */
 @Repository
 public interface AssetRepository extends JpaRepository<Asset, Long> {
+
     /**
-     * Получить список активов, принадлежащих конкретному пользователю
+     * Получить список активов пользователя, которыми он в данный момент владеет
      * @param userId ID пользователя
-     * @return список активов конкретного пользователя
+     * @return список активов пользователя, которыми он в данный момент владеет
      */
-    List<Asset> findByUserId(Long userId);
+    List<Asset> findOwnedAssetsByUserId(Long userId);
+
+    /**
+     * Нахождение конкретного актива принадлежащего пользователю
+     * @param userId ID пользователя
+     * @param cryptoId ID актива
+     * @return актив принадлежащий пользователю
+     */
+    Asset findByUserIdAndCryptoId(Long userId, Long cryptoId);
+
+    // TODO: Получить список(историю) операций по конкретному пользователю
 }

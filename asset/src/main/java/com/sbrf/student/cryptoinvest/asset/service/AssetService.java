@@ -1,4 +1,4 @@
-package com.sbrf.student.cryptoinvest.asset.service_DO_NOT_USE;
+package com.sbrf.student.cryptoinvest.asset.service;
 
 import com.sbrf.student.cryptoinvest.asset.model.Asset;
 
@@ -13,10 +13,9 @@ public interface AssetService {
     /**
      * Получение списка активов пользователя
      * @param userId ID пользователя, для которого нужно получить список активов
-     * @return список активов пользователя
+     * @return Список активов пользователя
      */
-    List<Asset> getAssetsByUserId(Long userId);
-
+    List<Asset> getOwnedAssetsByUserId(Long userId);
 
     /**
      * Покупка актива пользователя
@@ -25,7 +24,6 @@ public interface AssetService {
      * @param quantity количество актива, которое нужно приобрести
      */
     void buyAsset(Long cryptoId, Long userId, BigDecimal quantity);
-
 
     /**
      * Продажа актива пользователя

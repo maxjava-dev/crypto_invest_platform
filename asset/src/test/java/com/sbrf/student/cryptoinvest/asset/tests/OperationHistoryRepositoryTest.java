@@ -48,7 +48,7 @@ public class OperationHistoryRepositoryTest {
 
         operation1 = new OperationHistory();
         operation1.setAsset(asset);
-        operation1.setOperationType(OperationType.BUY);
+        operation1.setOperationType(OperationType.buy);
         operation1.setSumOperation(BigDecimal.valueOf(100));
         operation1.setPurchaseDate(LocalDateTime.now());
         operation1.setQuantity(BigDecimal.valueOf(10.0));
@@ -56,7 +56,7 @@ public class OperationHistoryRepositoryTest {
 
         operation2 = new OperationHistory();
         operation2.setAsset(asset);
-        operation2.setOperationType(OperationType.SELL);
+        operation2.setOperationType(OperationType.sell);
         operation2.setSumOperation(BigDecimal.valueOf(50));
         operation2.setPurchaseDate(LocalDateTime.now());
         operation2.setQuantity(BigDecimal.valueOf(5.0));

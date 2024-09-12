@@ -44,7 +44,7 @@ public class AssetRepositoryTest {
     }
 
     /**
-     * Тестирование метода {@link AssetRepository#findByUserId(Long)}.
+     * Тестирование метода {@link AssetRepository#findOwnedAssetsByUserId(Long)}.
      *
      * Проверка нахождения активов у существующего пользователя
      */
@@ -53,7 +53,7 @@ public class AssetRepositoryTest {
         /**
          * Находит активы с указанным id пользователя
          */
-        List<Asset> assets = assetRepository.findByUserId(1L);
+        List<Asset> assets = assetRepository.findOwnedAssetsByUserId(1L);
 
         /**
          * Проверка что именно 2 актива(количество) у этого пользователя, согласно инициализации
@@ -67,7 +67,7 @@ public class AssetRepositoryTest {
     }
 
     /**
-     * Тестирование метода {@link AssetRepository#findByUserId(Long)}.
+     * Тестирование метода {@link AssetRepository#findOwnedAssetsByUserId(Long)}.
      *
      * Проверка нахождения активов в случае обращения к несуществующему пользователю
      */
@@ -77,7 +77,7 @@ public class AssetRepositoryTest {
          * Поиск активов у несуществующего пользователю
          *
          */
-        List<Asset> assets = assetRepository.findByUserId(2L);
+        List<Asset> assets = assetRepository.findOwnedAssetsByUserId(2L);
 
         /**
          * Проверяет, что возвращаемый список активов пуст

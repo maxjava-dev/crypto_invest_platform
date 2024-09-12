@@ -6,36 +6,34 @@ import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-
 /**
  * Активы клиента
  */
 @Entity
 @Data
-@Table(name = "assets",
-        uniqueConstraints ={@UniqueConstraint(columnNames = {"userId", "cryptoId"})})
+@Table(name = "assets", uniqueConstraints ={@UniqueConstraint(columnNames = {"userId", "cryptoId"})})
 public class Asset {
     /**
-     * id приобретенного актива
+     * Id приобретенного актива
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long assetId;
 
     /**
-     *  id клиента который владеет активом(foreign key к микросервису User)
+     *  Id клиента который владеет активом(foreign key к микросервису User)
      */
     @Column(nullable = false)
     private Long userId;
 
     /**
-     * id криптовалюты принадлежащей клиенту(foreign key к микросервису Cryptocurrency)
+     * Id криптовалюты принадлежащей клиенту(foreign key к микросервису Cryptocurrency)
      */
     @Column(nullable = false)
     private Long cryptoId;
 
     /**
-     * количество криптовалюты принадлежащей клиенту
+     * Количество криптовалюты принадлежащей клиенту
      */
     @Column(nullable = false)
     @PositiveOrZero(message = "Переданное количество валюты превышает имеющееся")
@@ -43,6 +41,8 @@ public class Asset {
 
     /**
      * История операций, связанных с этим активом (для оптимизации)
+     * TODO: сделать историю операций далее
+     *  Проанализировать еще раз структура бд
      */
     @OneToMany(mappedBy = "asset")
     private List<OperationHistory> operationHistories;
