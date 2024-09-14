@@ -8,6 +8,7 @@ import com.sbrf.student.cryptoinvest.crypto.model.entity.CryptoCurrencyEntity;
 import com.sbrf.student.cryptoinvest.crypto.repository.CryptoCurrencyRepository;
 import com.sbrf.student.cryptoinvest.crypto.service.CryptoCurrencyService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
  * Реализация {@link CryptoCurrencyService}.
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
 
@@ -33,6 +35,8 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
 
     @Override
     public List<CryptoCurrency> getAllCryptoCurrencies() {
+        log.info("getAllCryptoCurrencies called");
+
         updateMetadataIfNeeded();
 
         var entities = metadataCache.values();
@@ -57,6 +61,8 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
 
     @Override
     public CryptoCurrency getCryptoCurrency(Long cryptoId) {
+        log.info("getCryptoCurrency called");
+
         updateMetadataIfNeeded();
 
         var entity = metadataCache.get(cryptoId);
@@ -78,7 +84,11 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
 
             var entities = repository.findAll();
             if (entities.isEmpty()) {
+                log.info("fetching metadata from external api");
                 entities = fetchEntities();
+                log.info("got metadata from external api");
+            } else {
+                log.info("got metadata from db");
             }
 
             metadataCache = entities
@@ -89,6 +99,8 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
                                     Function.identity()
                             )
                     );
+        } else {
+            log.info("got metadata from cache");
         }
     }
 

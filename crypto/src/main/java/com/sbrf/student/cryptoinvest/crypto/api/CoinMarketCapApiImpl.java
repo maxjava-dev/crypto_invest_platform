@@ -4,6 +4,7 @@ import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapIdList;
 import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapMetadata;
 import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapPriceList;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
  * Реализация {@link CoinMarketCapApi}.
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CoinMarketCapApiImpl implements CoinMarketCapApi {
 
@@ -26,6 +28,7 @@ public class CoinMarketCapApiImpl implements CoinMarketCapApi {
 
     @Override
     public CoinMarketCapMetadata getMetadata(List<Long> ids) {
+        log.info("getMetadata called");
         ResponseEntity<CoinMarketCapMetadata> response = restTemplate.exchange(
                 BASE_API_URL + "v2/cryptocurrency/info?id={ids}",
                 HttpMethod.GET,
@@ -33,7 +36,7 @@ public class CoinMarketCapApiImpl implements CoinMarketCapApi {
                 CoinMarketCapMetadata.class,
                 getIdsString(ids)
         );
-
+        log.info("getMetadata response: "+response);
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             return response.getBody();
         }
@@ -43,6 +46,7 @@ public class CoinMarketCapApiImpl implements CoinMarketCapApi {
 
     @Override
     public CoinMarketCapIdList getIdList(int topN) {
+        log.info("getIdList called");
 
         Map<String, Object> params = new HashMap<>();
         params.put("limit", topN);
@@ -56,6 +60,8 @@ public class CoinMarketCapApiImpl implements CoinMarketCapApi {
                 params
         );
 
+        log.info("getIdList response: "+response);
+
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             return response.getBody();
         }
@@ -65,6 +71,7 @@ public class CoinMarketCapApiImpl implements CoinMarketCapApi {
 
     @Override
     public CoinMarketCapPriceList getPriceList(List<Long> ids) {
+        log.info("getPriceList called");
         ResponseEntity<CoinMarketCapPriceList> response = restTemplate.exchange(
                 BASE_API_URL + "v2/cryptocurrency/quotes/latest?id={ids}",
                 HttpMethod.GET,
@@ -72,6 +79,8 @@ public class CoinMarketCapApiImpl implements CoinMarketCapApi {
                 CoinMarketCapPriceList.class,
                 getIdsString(ids)
         );
+
+        log.info("getPriceList response: "+response);
 
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             return response.getBody();
