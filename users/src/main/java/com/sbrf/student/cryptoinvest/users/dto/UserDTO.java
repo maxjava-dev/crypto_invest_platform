@@ -10,6 +10,12 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserDTO {
 
+
+    /**
+     * Идентификатор клиента.
+     */
+    private long id;
+
     /**
      * Логин.
      */
@@ -29,4 +35,10 @@ public class UserDTO {
      * Электронная почта.
      */
     private String email;
+
+
+    /**
+     * Баланс счета.
+     */
+    private String balance;
 }
