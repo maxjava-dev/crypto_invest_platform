@@ -5,6 +5,7 @@ import com.sbrf.student.cryptoinvest.asset.model.Asset;
 import com.sbrf.student.cryptoinvest.asset.repository.AssetRepository;
 import com.sbrf.student.cryptoinvest.asset.service.AssetService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -22,7 +23,9 @@ import java.util.List;
 public class AssetServiceImpl implements AssetService {
     private final RestTemplate restTemplate;
     private final AssetRepository assetRepository;
-    private final String CRYPTOCURRENCY_SERVICE_URL = "http://localhost:8083/crypto";
+
+    @Value("${CRYPTO_URL}")
+    private String CRYPTOCURRENCY_SERVICE_URL;
 
     /**
      * Получить список активов, принадлежащих конкретному пользователю
