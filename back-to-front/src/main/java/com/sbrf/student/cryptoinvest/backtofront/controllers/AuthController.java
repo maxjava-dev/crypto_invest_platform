@@ -31,7 +31,6 @@ public class AuthController {
         return "auth/login";
     }
 
-
     /**
      * @param user модель клиента для регистрации
      * @return форма регистрации с кнопкой "Зарегистрироваться"

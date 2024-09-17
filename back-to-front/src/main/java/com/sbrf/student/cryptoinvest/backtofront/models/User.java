@@ -13,6 +13,11 @@ import java.util.List;
 public class User implements UserDetails {
 
     /**
+     * Идентификатор.
+     */
+    private Long id;
+
+    /**
      * Логин.
      */
     private String username;
@@ -31,6 +36,11 @@ public class User implements UserDetails {
      * Электронная почта.
      */
     private String email;
+
+    /**
+     * Баланс счета клиента.
+     */
+    private String balance;
 
     /**
      * Конструктор по умолчанию.
@@ -60,5 +70,12 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    /**
+     * @return полное имя или логин в случае, если полное имя не задано
+     */
+    public String getVisibleUserName() {
+        return fullName != null ? fullName : username;
     }
 }

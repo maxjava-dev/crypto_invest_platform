@@ -27,7 +27,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .anyRequest().authenticated()
             .and()
             .formLogin().loginPage("/")
-            .loginProcessingUrl("/process_login");
+            .loginProcessingUrl("/process_login")
+            .defaultSuccessUrl("/assets/", true)
+            .failureUrl("/?error")
+            .and()
+            .logout()
+            .logoutUrl("/logout")
+            .logoutSuccessUrl("/");;
     }
 
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
