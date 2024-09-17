@@ -7,6 +7,7 @@ services:
     image: my_crypto:latest
     environment:
       COIN_MARKET_CAP_API_KEY: 14d723cf-09a1-42e5-8fa5-1a8e38dc296b
+      CC_API_KEY: ba752178db9de6faaad643a0655109886b60da6d91364abbf282ed0325a995ff
 
   users:
     container_name: users

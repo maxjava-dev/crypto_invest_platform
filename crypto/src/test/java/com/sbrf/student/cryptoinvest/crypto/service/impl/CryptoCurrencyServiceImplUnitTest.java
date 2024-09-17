@@ -1,6 +1,7 @@
 package com.sbrf.student.cryptoinvest.crypto.service.impl;
 
 import com.sbrf.student.cryptoinvest.crypto.api.CoinMarketCapApi;
+import com.sbrf.student.cryptoinvest.crypto.api.CryptoCompareApi;
 import com.sbrf.student.cryptoinvest.crypto.model.data.*;
 import com.sbrf.student.cryptoinvest.crypto.model.entity.CryptoCurrencyEntity;
 import com.sbrf.student.cryptoinvest.crypto.repository.CryptoCurrencyRepository;
@@ -23,7 +24,10 @@ import static org.mockito.Mockito.*;
 class CryptoCurrencyServiceImplUnitTest {
 
     @Mock
-    CoinMarketCapApi api;
+    CoinMarketCapApi coinMarketCapApi;
+
+    @Mock
+    CryptoCompareApi cryptoCompareApi;
 
     @Mock
     CryptoCurrencyRepository repository;
@@ -33,8 +37,8 @@ class CryptoCurrencyServiceImplUnitTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        underTest = new CryptoCurrencyServiceImpl(api, repository);
-        when(api.getIdList(50)).thenReturn(
+        underTest = new CryptoCurrencyServiceImpl(coinMarketCapApi, cryptoCompareApi, repository);
+        when(coinMarketCapApi.getIdList(50)).thenReturn(
                    new CoinMarketCapIdList(
                            List.of(
                                     new CoinMarketCapIdListElement(1L),
@@ -43,7 +47,7 @@ class CryptoCurrencyServiceImplUnitTest {
                            )
                    )
         );
-        when(api.getMetadata(any())).thenReturn(
+        when(coinMarketCapApi.getMetadata(any())).thenReturn(
                 new CoinMarketCapMetadata(
                         Map.of(
                                 "1", new CoinMarketCapMetadataElement(1L, "BTC", "Bitcoin", "desc1", "pic1"),
@@ -52,7 +56,7 @@ class CryptoCurrencyServiceImplUnitTest {
                         )
                 )
         );
-        when(api.getPriceList(any())).thenReturn(
+        when(coinMarketCapApi.getPriceList(any())).thenReturn(
                 new CoinMarketCapPriceList(
                         Map.of(
                                 "1", new CoinMarketCapPriceElement(1L, Map.of("USD", new CoinMarketCapPriceQuote(BigDecimal.TEN))),
@@ -102,9 +106,9 @@ class CryptoCurrencyServiceImplUnitTest {
 
         assertEquals(result, result2);
 
-        verify(api, times(2)).getPriceList(any());
-        verify(api, times(1)).getIdList(50);
-        verify(api, times(1)).getMetadata(any());
+        verify(coinMarketCapApi, times(2)).getPriceList(any());
+        verify(coinMarketCapApi, times(1)).getIdList(50);
+        verify(coinMarketCapApi, times(1)).getMetadata(any());
     }
 
     @Test
@@ -123,8 +127,8 @@ class CryptoCurrencyServiceImplUnitTest {
         assertEquals("pic1", result.getLogo());
         assertEquals(BigDecimal.TEN, result.getPrice());
 
-        verify(api, times(1)).getPriceList(any());
-        verify(api, times(0)).getIdList(50);
-        verify(api, times(0)).getMetadata(any());
+        verify(coinMarketCapApi, times(1)).getPriceList(any());
+        verify(coinMarketCapApi, times(0)).getIdList(50);
+        verify(coinMarketCapApi, times(0)).getMetadata(any());
     }
 }

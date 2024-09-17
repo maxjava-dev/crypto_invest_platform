@@ -1,7 +1,9 @@
 package com.sbrf.student.cryptoinvest.crypto.service.impl;
 
 import com.sbrf.student.cryptoinvest.crypto.api.CoinMarketCapApi;
+import com.sbrf.student.cryptoinvest.crypto.api.CryptoCompareApi;
 import com.sbrf.student.cryptoinvest.crypto.model.CryptoCurrency;
+import com.sbrf.student.cryptoinvest.crypto.model.HistoryItem;
 import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapIdListElement;
 import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapPriceElement;
 import com.sbrf.student.cryptoinvest.crypto.model.entity.CryptoCurrencyEntity;
@@ -13,10 +15,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,7 +27,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
 
-    private final CoinMarketCapApi api;
+    private final CoinMarketCapApi coinMarketCapApi;
+    private final CryptoCompareApi cryptoCompareApi;
     private final CryptoCurrencyRepository repository;
 
     private Map<Long, CryptoCurrencyEntity> metadataCache = null;
@@ -41,7 +41,7 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
 
         var entities = metadataCache.values();
         var externalIdList = entities.stream().map(CryptoCurrencyEntity::getExternalId).toList();
-        var priceElementList = api.getPriceList(externalIdList);
+        var priceElementList = coinMarketCapApi.getPriceList(externalIdList);
 
         return entities
                 .stream()
@@ -66,7 +66,7 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
         updateMetadataIfNeeded();
 
         var entity = metadataCache.get(cryptoId);
-        var priceList = api.getPriceList(List.of(entity.getExternalId()));
+        var priceList = coinMarketCapApi.getPriceList(List.of(entity.getExternalId()));
         var priceElement = priceList
                 .getData()
                 .values()
@@ -76,6 +76,25 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
 
         return new CryptoCurrency(entity.getId(), entity.getSymbol(), entity.getName(), entity.getDescription(),
                 entity.getLogo(), getPrice(priceElement));
+    }
+
+    @Override
+    public List<HistoryItem> getHistoryData(String symbol) {
+        log.info("getHistoryData called");
+
+        var response = cryptoCompareApi.getHourlyHistoryData(symbol);
+
+        return response
+                .getData()
+                .getData()
+                .stream()
+                .map((entity) -> {
+                            var price = BigDecimal.valueOf(entity.getOpen());
+                            return new HistoryItem(entity.getTime(), price);
+                        }
+                )
+                .sorted(Comparator.comparing(HistoryItem::getTime))
+                .toList();
     }
 
     private void updateMetadataIfNeeded() {
@@ -106,9 +125,9 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
 
     @NonNull
     private List<CryptoCurrencyEntity> fetchEntities() {
-        var ids = api.getIdList(CRYPTOCURRENCY_COUNT);
+        var ids = coinMarketCapApi.getIdList(CRYPTOCURRENCY_COUNT);
         var idList = ids.getData().stream().map(CoinMarketCapIdListElement::getId).toList();
-        var metadata = api.getMetadata(idList);
+        var metadata = coinMarketCapApi.getMetadata(idList);
 
         var entities = metadata
                 .getData()

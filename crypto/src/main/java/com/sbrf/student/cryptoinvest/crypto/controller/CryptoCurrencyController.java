@@ -1,6 +1,7 @@
 package com.sbrf.student.cryptoinvest.crypto.controller;
 
 import com.sbrf.student.cryptoinvest.crypto.model.CryptoCurrency;
+import com.sbrf.student.cryptoinvest.crypto.model.HistoryItem;
 import com.sbrf.student.cryptoinvest.crypto.service.CryptoCurrencyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,4 +36,14 @@ public class CryptoCurrencyController {
     public ResponseEntity<CryptoCurrency[]> getAll() {
         return ResponseEntity.ok(cryptoCurrencyService.getAllCryptoCurrencies().toArray(CryptoCurrency[]::new));
     }
+
+    /**
+     * @param symbol сивол криптовалюты
+     * @return список цен за последние 100 часов
+     */
+    @GetMapping("/history/{symbol}")
+    public ResponseEntity<HistoryItem[]> getOne(@PathVariable String symbol) {
+        return ResponseEntity.ok(cryptoCurrencyService.getHistoryData(symbol).toArray(HistoryItem[]::new));
+    }
+
 }

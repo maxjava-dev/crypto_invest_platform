@@ -1,6 +1,7 @@
 package com.sbrf.student.cryptoinvest.crypto.service.impl;
 
 import com.sbrf.student.cryptoinvest.crypto.model.CryptoCurrency;
+import com.sbrf.student.cryptoinvest.crypto.model.HistoryItem;
 import com.sbrf.student.cryptoinvest.crypto.service.CryptoCurrencyService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,4 +48,18 @@ class CryptoCurrencyServiceImplTest {
         assertNotNull(element.getDescription());
         assertNotNull(element.getId());
     }
+
+    @Test
+    void getHistoryData() {
+
+        var result = service.getHistoryData("BTC");
+
+        assertNotNull(result);
+        assertNotEquals(0, result.size());
+        for (HistoryItem element : result) {
+            assertNotNull(element);
+            assertNotNull(element.getPrice());
+        }
+    }
+
 }
