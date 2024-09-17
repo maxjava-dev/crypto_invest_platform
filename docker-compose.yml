@@ -1,0 +1,46 @@
+services:
+  crypto:
+    container_name: crypto
+    build:
+      context: ./crypto
+      dockerfile: ./Dockerfile
+    image: my_crypto:latest
+    environment:
+      COIN_MARKET_CAP_API_KEY: 14d723cf-09a1-42e5-8fa5-1a8e38dc296b
+
+  users:
+    container_name: users
+    build:
+      context: ./users
+      dockerfile: ./Dockerfile
+    image: my_users:latest
+
+  asset:
+    container_name: asset
+    build:
+      context: ./asset
+      dockerfile: ./Dockerfile
+    image: my_asset:latest
+    depends_on:
+      - crypto
+      - users
+    environment:
+      USERS_URL: http://users:8081
+      CRYPTO_URL: http://crypto:8083
+
+  back-to-front:
+    container_name: back-to-front
+    build:
+      context: ./back-to-front
+      dockerfile: ./Dockerfile
+    image: my_back-to-front:latest
+    depends_on:
+      - crypto
+      - asset
+      - users
+    environment:
+      USERS_URL: http://users:8081
+      ASSETS_URL: http://asset:8082
+      CRYPTO_URL: http://crypto:8083
+    ports:
+      - 8080:8080

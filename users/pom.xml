@@ -10,11 +10,11 @@
     <relativePath/>
   </parent>
 
-  <groupId>ru.edu</groupId>
-  <artifactId>lecture11_1</artifactId>
+  <groupId>com.sbrf.student.cryptoinvest</groupId>
+  <artifactId>users</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>lecture11_1</name>
+  <name>users</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
