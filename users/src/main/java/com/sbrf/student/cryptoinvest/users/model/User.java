@@ -83,7 +83,7 @@ public class User {
     }
 
     public UserDTO getDTO() {
-        return new UserDTO(userName, password, fullName, email);
+        return new UserDTO(id, userName, password, fullName, email, account.getBalance().toString());
     }
 
     @Override
