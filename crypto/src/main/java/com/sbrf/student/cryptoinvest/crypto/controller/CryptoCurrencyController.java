@@ -42,7 +42,7 @@ public class CryptoCurrencyController {
      * @return список цен за последние 100 часов
      */
     @GetMapping("/history/{symbol}")
-    public ResponseEntity<HistoryItem[]> getOne(@PathVariable String symbol) {
+    public ResponseEntity<HistoryItem[]> getHistory(@PathVariable String symbol) {
         return ResponseEntity.ok(cryptoCurrencyService.getHistoryData(symbol).toArray(HistoryItem[]::new));
     }
 
