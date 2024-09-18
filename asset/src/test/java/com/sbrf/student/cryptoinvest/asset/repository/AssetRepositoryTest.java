@@ -1,4 +1,4 @@
-package com.sbrf.student.cryptoinvest.asset.tests;
+package com.sbrf.student.cryptoinvest.asset.repository;
 
 import com.sbrf.student.cryptoinvest.asset.model.Asset;
 import com.sbrf.student.cryptoinvest.asset.repository.AssetRepository;
@@ -45,7 +45,6 @@ public class AssetRepositoryTest {
 
     /**
      * Тестирование метода {@link AssetRepository#findOwnedAssetsByUserId(Long)}.
-     *
      * Проверка нахождения активов у существующего пользователя
      */
     @Test
@@ -68,7 +67,6 @@ public class AssetRepositoryTest {
 
     /**
      * Тестирование метода {@link AssetRepository#findOwnedAssetsByUserId(Long)}.
-     *
      * Проверка нахождения активов в случае обращения к несуществующему пользователю
      */
     @Test
