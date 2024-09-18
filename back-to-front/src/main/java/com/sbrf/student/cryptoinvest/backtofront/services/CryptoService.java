@@ -2,14 +2,13 @@ package com.sbrf.student.cryptoinvest.backtofront.services;
 
 import com.sbrf.student.cryptoinvest.backtofront.api.CryptoApi;
 import com.sbrf.student.cryptoinvest.backtofront.models.ChartItem;
+import com.sbrf.student.cryptoinvest.backtofront.models.CryptoCurrency;
 import com.sbrf.student.cryptoinvest.backtofront.models.CryptoCurrencyInfoModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * Сервис для получения данных о криптовалютах
@@ -19,6 +18,18 @@ import java.util.TimeZone;
 public class CryptoService {
 
     private final CryptoApi cryptoApi;
+
+    /**
+     * @return список всех криптовалют
+     */
+    public List<CryptoCurrency> getAll() {
+        var cryptos = cryptoApi.getAll();
+        if (cryptos.isPresent()) {
+            return cryptos.get();
+        } else {
+            throw new RuntimeException("Error getting all crypto");
+        }
+    }
 
     /**
      * @param symbol символ криптовалюты

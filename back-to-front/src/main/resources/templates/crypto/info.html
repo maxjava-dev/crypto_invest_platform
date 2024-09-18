@@ -42,5 +42,10 @@
         }]
     });
 </script>
+<form class="top-right" th:action="@{/logout}" th:method="POST">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <p><span th:text="${username}"></span></p>
+    <input type="submit" class="btn btn-primary" value="Выход"/>
+</form>
 </body>
 </html>
