@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Активы</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+</head>
+</head>
+<body>
+<div class="vw-800 justify-content-center align-items-center">
+    <div class="text-center" th:text="${data.symbol}"></div>
+    <div class="container mt-5">
+        <div id="chart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    </div>
+</div>
+<script th:inline="javascript">
+    let dataPoints = [[${data.historyItemList}]];
+    Highcharts.chart('chart', {
+        title: {
+            text: 'Изменения цены за последние 100 часов'
+        },
+        xAxis: {
+            categories: dataPoints.map(function(point) {
+                return point.time;
+            })
+        },
+        yAxis: {
+            title: {
+                text: 'Цена, USD'
+            }
+        },
+        series: [{
+            type: 'line',
+            name: [[${data.symbol}]],
+            data: dataPoints.map(function(point) {
+                return point.price;
+            })
+        }]
+    });
+</script>
+</body>
+</html>

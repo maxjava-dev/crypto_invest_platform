@@ -162,7 +162,7 @@ public class AssetServiceImpl implements AssetService {
      * @return информация о криптовалюте в формате json
      */
     private CryptoServiceResponse fetchCryptoData(Long cryptoId) {
-        String url = CRYPTOCURRENCY_SERVICE_URL + "/" + cryptoId;
+        String url = CRYPTOCURRENCY_SERVICE_URL + "/crypto/" + cryptoId;
         try {
             return restTemplate.getForObject(url, CryptoServiceResponse.class);
         } catch (RestClientException e) {
