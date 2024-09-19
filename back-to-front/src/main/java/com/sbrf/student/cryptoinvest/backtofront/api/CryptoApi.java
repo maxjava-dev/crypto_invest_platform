@@ -52,6 +52,26 @@ public class CryptoApi {
     }
 
     /**
+     * Получить одну криптовалюту.
+     * @return опциональная криптовалюта
+     */
+    public Optional<CryptoCurrency> getOne(String symbol) {
+        try {
+            ResponseEntity<CryptoCurrency> response = restTemplate.getForEntity(
+                    BASE_CRYPTO_URL + "/crypto/symbol/"+symbol, CryptoCurrency.class
+            );
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return Optional.of(response.getBody());
+            } else {
+                return Optional.empty();
+            }
+        } catch (Throwable e) {
+            log.error(e.toString());
+            return Optional.empty();
+        }
+    }
+
+    /**
      * Получить историю цен.
      * @param symbol символ криптовалюты
      * @return опциональный список цен

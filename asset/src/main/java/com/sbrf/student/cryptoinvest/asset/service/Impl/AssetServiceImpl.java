@@ -28,7 +28,10 @@ public class AssetServiceImpl implements AssetService {
     @Value("${CRYPTO_URL}")
     private String CRYPTOCURRENCY_SERVICE_URL;
 
-    private final String USERS_SERVICE_UPDATE_BALANCE_URL = "http://localhost:8081/account/topup";
+    @Value("${USERS_URL}")
+    private String USERS_SERVICE_UPDATE_BALANCE_URL;
+
+    private final String USERS_SERVICE_UPDATE_BALANCE_SUFFIX = "/account/topup";
 
     /**
      * Получить список активов, принадлежащих конкретному пользователю
@@ -149,7 +152,7 @@ public class AssetServiceImpl implements AssetService {
         log.info("Обновление баланса для пользователя: {} на сумму: {}", userId, amountStr);
 
         try {
-            restTemplate.put(USERS_SERVICE_UPDATE_BALANCE_URL, balanceChangeDTO);
+            restTemplate.put(USERS_SERVICE_UPDATE_BALANCE_URL + USERS_SERVICE_UPDATE_BALANCE_SUFFIX, balanceChangeDTO);
         } catch (RestClientException e) {
             log.error("Ошибка при обновлении баланса счета: {}", e.getMessage(), e);
             throw new RuntimeException("Ошибка при обновлении баланса счета", e);

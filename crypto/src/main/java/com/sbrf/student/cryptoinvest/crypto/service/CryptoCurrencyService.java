@@ -23,6 +23,12 @@ public interface CryptoCurrencyService {
 
     /**
      * @param symbol символ криптовалюты
+     * @return модель криптовалюты
+     */
+    CryptoCurrency getCryptoCurrencyBySymbol(String symbol);
+
+    /**
+     * @param symbol символ криптовалюты
      * @return список цен за 100 часов
      */
     List<HistoryItem> getHistoryData(String symbol);

@@ -30,6 +30,15 @@ public class CryptoCurrencyController {
     }
 
     /**
+     * @param symbol символ криптовалюты
+     * @return модель криптовалюты
+     */
+    @GetMapping("/symbol/{symbol}")
+    public ResponseEntity<CryptoCurrency> getOne(@PathVariable String symbol) {
+        return ResponseEntity.ok(cryptoCurrencyService.getCryptoCurrencyBySymbol(symbol));
+    }
+
+    /**
      * @return список моделей всех криптовалют
      */
     @GetMapping("/getAll")
