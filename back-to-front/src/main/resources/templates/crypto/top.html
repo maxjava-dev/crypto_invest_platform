@@ -28,7 +28,7 @@
                     <tbody>
                     <tr th:each="crypto, iterator : ${cryptos}">
                         <td class="text-center" th:text="${iterator.index + 1}"></td>
-                        <td class="text-center"><img th:src="${crypto.logo}"  width="25" height="25"></td>
+                        <td class="text-center"><img th:src="${crypto.logo}" width="25" height="25"></td>
                         <td class="text-center" th:text="${crypto.symbol}"></td>
                         <td class="text-center" th:text="${crypto.name}"></td>
                         <td class="text-center">
@@ -41,7 +41,6 @@
             </div>
         </div>
     </div>
-</div>
 </div>
 <form class="top-right" th:action="@{/logout}" th:method="POST">
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

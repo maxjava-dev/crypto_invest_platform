@@ -13,14 +13,12 @@ import java.util.List;
 public class CryptoCurrencyInfoModel {
 
     /**
-     * Символ
+     * Данные о криптовалюте
      */
-    private String symbol;
+    private CryptoCurrency cryptoCurrency;
 
     /**
      * Список цен
      */
     private List<ChartItem> historyItemList;
-
-    // TODO: Добавить остальные данные
 }

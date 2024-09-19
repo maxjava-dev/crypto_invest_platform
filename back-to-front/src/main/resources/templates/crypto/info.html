@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Активы</title>
+    <title>О криптовалюте</title>
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/css/common.css">
@@ -11,10 +11,31 @@
 </head>
 </head>
 <body>
-<div class="vw-800 justify-content-center align-items-center">
-    <div class="text-center" th:text="${data.symbol}"></div>
+<div class="vh-100 d-flex">
     <div class="container mt-5">
-        <div id="chart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        <div class="row justify-content-center">
+            <div class="col-md-8 overflow-auto">
+                <table class="table table-info">
+                    <tr>
+                        <td class="text-center"><img th:src="${data.cryptoCurrency.logo}" width="25" height="25"></td>
+                        <td class="text-center" th:text="${data.cryptoCurrency.symbol}"></td>
+                        <td class="text-center" th:text="${data.cryptoCurrency.name}"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="text-center">Цена, USD:</td>
+                        <td class="text-center" th:text="${data.cryptoCurrency.price}"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="text-left" th:text="${data.cryptoCurrency.description}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <a th:href="@{/crypto/{id}/buy(id=${data.cryptoCurrency.id})}" class="btn btn-primary">Купить</a>
+                <div class="container mt-5">
+                    <div id="chart" style="min-width: 100px; height: 400px; margin: 10px auto"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <script th:inline="javascript">
@@ -35,7 +56,7 @@
         },
         series: [{
             type: 'line',
-            name: [[${data.symbol}]],
+            name: [[${data.cryptoCurrency.symbol}]],
             data: dataPoints.map(function(point) {
                 return point.price;
             })

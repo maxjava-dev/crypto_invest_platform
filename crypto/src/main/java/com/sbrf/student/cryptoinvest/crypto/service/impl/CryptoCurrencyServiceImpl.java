@@ -32,6 +32,7 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
     private final CryptoCurrencyRepository repository;
 
     private Map<Long, CryptoCurrencyEntity> metadataCache = null;
+    private Map<String, CryptoCurrencyEntity> metadataCacheBySymbol = null;
 
     @Override
     public List<CryptoCurrency> getAllCryptoCurrencies() {
@@ -66,6 +67,20 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
         updateMetadataIfNeeded();
 
         var entity = metadataCache.get(cryptoId);
+        return getCryptoCurrencyByEntity(entity);
+    }
+
+    @Override
+    public CryptoCurrency getCryptoCurrencyBySymbol(String symbol) {
+        log.info("getCryptoCurrencyBySymbol called");
+
+        updateMetadataIfNeeded();
+
+        var entity = metadataCacheBySymbol.get(symbol);
+        return getCryptoCurrencyByEntity(entity);
+    }
+
+    private CryptoCurrency getCryptoCurrencyByEntity(CryptoCurrencyEntity entity) {
         var priceList = coinMarketCapApi.getPriceList(List.of(entity.getExternalId()));
         var priceElement = priceList
                 .getData()
@@ -100,6 +115,7 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
     private void updateMetadataIfNeeded() {
         if (metadataCache == null) {
             metadataCache = new TreeMap<>();
+            metadataCacheBySymbol = new TreeMap<>();
 
             var entities = repository.findAll();
             if (entities.isEmpty()) {
@@ -115,6 +131,14 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
                     .collect(
                             Collectors.toMap(
                                     CryptoCurrencyEntity::getId,
+                                    Function.identity()
+                            )
+                    );
+            metadataCacheBySymbol = entities
+                    .stream()
+                    .collect(
+                            Collectors.toMap(
+                                    CryptoCurrencyEntity::getSymbol,
                                     Function.identity()
                             )
                     );
