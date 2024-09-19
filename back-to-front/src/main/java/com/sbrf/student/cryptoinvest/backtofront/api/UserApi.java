@@ -63,7 +63,6 @@ public class UserApi {
      */
     public void topUpUserBalance(String amount) {
         Long currentUserId = UserAuthentication.getCurrentUser().getId();
-        System.out.println("userId: " + currentUserId);
         AccountPutBalanceTopUpDTO putBalanceTopUpDTO = new AccountPutBalanceTopUpDTO(currentUserId, amount);
         restTemplate.put(
                 BASE_USERS_URL + ACCOUNT_API_PATH + "/topup", putBalanceTopUpDTO, AccountPutBalanceTopUpDTO.class
