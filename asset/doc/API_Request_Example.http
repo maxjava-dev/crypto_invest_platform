@@ -1,0 +1,23 @@
+#Демонстрация работы API запросов из README.md файла [README.md](README.md)
+#Для успешного выполнения запросов у пользователя должен быть пополнен баланс на корректную сумму
+
+###
+#Пример покупки актива
+POST http://localhost:8082/assets/buy?cryptoid=1&userid=1&quantity=1
+
+###
+# Пример продажи актива
+POST http://localhost:8082/assets/sell?cryptoid=1&userid=1&quantity=0.5
+
+###
+#Пример получения активов конкретного пользователя по userID
+GET http://localhost:8082/assets/info?userid=1
+
+###
+#История операций:
+#Получение всех транзакций конкретного пользователя по userId
+GET http://localhost:8082/operations/user/1
+
+###
+#Получение всех транзакций пользователя по конкретной криптовалюте по userID и cryptoID
+GET http://localhost:8082/operations/user/1/crypto/1
