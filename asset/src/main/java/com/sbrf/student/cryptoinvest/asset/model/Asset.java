@@ -1,5 +1,6 @@
 package com.sbrf.student.cryptoinvest.asset.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -41,9 +42,8 @@ public class Asset {
 
     /**
      * История операций, связанных с этим активом (для оптимизации)
-     * TODO: сделать историю операций далее
-     *  Проанализировать еще раз структура бд
      */
     @OneToMany(mappedBy = "asset")
+    @JsonIgnore
     private List<OperationHistory> operationHistories;
 }

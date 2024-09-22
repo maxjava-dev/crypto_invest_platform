@@ -50,7 +50,25 @@ public class AssetControllerTest {
     }
 
     /**
-     * Тест для метода {@link AssetController#handleAssetTransaction(Long, Long, BigDecimal, OperationType)},
+     * Тест на проверку метода {@link AssetController#getAssets(Long)},
+     * который должен вернуть пустой список активов для пользователя.
+     * Проверяется правильность возвращаемого списка и статус-код ответа.
+     */
+    @Test
+    void getAssets_ReturnsEmptyAssetList() {
+        Long userId = 1L;
+        List<Asset> mockAssets = Collections.emptyList(); // Пустой список активов
+        when(assetService.getOwnedAssetsByUserId(userId)).thenReturn(mockAssets);
+
+        ResponseEntity<List<Asset>> response = assetController.getAssets(userId);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(mockAssets, response.getBody());
+        verify(assetService, times(1)).getOwnedAssetsByUserId(userId);
+    }
+
+    /**
+     * Тест для метода {@link AssetController#handleAssetTransaction(Long, Long, BigDecimal, String)},
      * который обрабатывает покупку актива.
      * Проверяется корректность вызова метода на сервисе и возвращаемый статус-код.
      */
@@ -59,25 +77,25 @@ public class AssetControllerTest {
         Long cryptoId = 1L;
         Long userId = 1L;
         BigDecimal quantity = BigDecimal.valueOf(10);
-        OperationType operationType = OperationType.buy;
-        ResponseEntity<Void> response = assetController.handleAssetTransaction(cryptoId, userId, quantity,
-                                                                               operationType);
+        String operationType = "buy";
+
+        ResponseEntity<Void> response = assetController.handleAssetTransaction(cryptoId, userId, quantity, operationType);
         assertEquals(200, response.getStatusCodeValue());
         verify(assetService, times(1)).buyAsset(cryptoId, userId, quantity);
     }
 
     /**
-     * Тест для метода {@link AssetController#handleAssetTransaction(Long, Long, BigDecimal, OperationType)},
+     * Тест для метода {@link AssetController#handleAssetTransaction(Long, Long, BigDecimal, String)},
      * который обрабатывает продажу актива.
      * Проверяется корректность вызова метода на сервисе и возвращаемый статус-код.
      */
     @Test
     void handleAssetTransaction_SellOperation_Success() throws Exception {
-        // Arrange
         Long cryptoId = 1L;
         Long userId = 1L;
         BigDecimal quantity = BigDecimal.valueOf(5);
-        OperationType operationType = OperationType.sell;
+        String operationType = "sell";
+
         ResponseEntity<Void> response = assetController.handleAssetTransaction(cryptoId, userId, quantity, operationType);
         assertEquals(200, response.getStatusCodeValue());
         verify(assetService, times(1)).sellAsset(cryptoId, userId, quantity);
@@ -85,23 +103,39 @@ public class AssetControllerTest {
 
     /**
      * Тест на проверку выброса исключения при передаче null в качестве типа операции в метод
-     * {@link AssetController#handleAssetTransaction(Long, Long, BigDecimal, OperationType)}.
+     * {@link AssetController#handleAssetTransaction(Long, Long, BigDecimal, String)}.
      * Проверяется, что выбрасывается корректное сообщение об ошибке.
      */
     @Test
     void handleAssetTransaction_InvalidOperationNull_ThrowsException() {
-        // Arrange
         Long cryptoId = 1L;
         Long userId = 1L;
         BigDecimal quantity = BigDecimal.valueOf(5);
-        OperationType invalidOperationType = null;
+        String invalidOperationType = null;
 
-        // Act & Assert
-        Exception exception = assertThrows(Exception.class, () ->
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 assetController.handleAssetTransaction(cryptoId, userId, quantity, invalidOperationType));
 
         assertEquals("Неверный тип операции: " + invalidOperationType, exception.getMessage());
     }
 
-    // TODO: Тест проверка enum на невалидное значение отличное от null(обработка)
+    /**
+     * Тест на проверку выброса исключения при передаче невалидного типа операции в метод
+     * {@link AssetController#handleAssetTransaction(Long, Long, BigDecimal, String)}.
+     * Проверяется, что выбрасывается корректное сообщение об ошибке.
+     */
+    @Test
+    void handleAssetTransaction_InvalidOperationType_ThrowsException() {
+        Long cryptoId = 1L;
+        Long userId = 1L;
+        BigDecimal quantity = BigDecimal.valueOf(5);
+        String invalidOperationType = "invalid"; // Неправильное значение
+
+        // Проверяем, что при передаче неправильного значения выбрасывается исключение
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                assetController.handleAssetTransaction(cryptoId, userId, quantity, invalidOperationType));
+
+        // Проверяем, что сообщение об ошибке соответствует ожидаемому
+        assertEquals("Неверный тип операции: " + invalidOperationType, exception.getMessage());
+    }
 }

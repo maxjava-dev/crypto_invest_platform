@@ -1,10 +1,13 @@
 package com.sbrf.student.cryptoinvest.asset.service.impl;
 
-import com.sbrf.student.cryptoinvest.asset.api.cryptocurrencyservice.CryptoServiceResponse;
+import com.sbrf.student.cryptoinvest.asset.dto.api.cryptocurrencyservice.CryptoServiceResponse;
 import com.sbrf.student.cryptoinvest.asset.model.Asset;
 import com.sbrf.student.cryptoinvest.asset.repository.AssetRepository;
+import com.sbrf.student.cryptoinvest.asset.repository.OperationHistoryRepository;
 import com.sbrf.student.cryptoinvest.asset.service.Impl.AssetServiceImpl;
-import org.junit.*;
+import org.junit.Before;
+
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -29,12 +32,14 @@ public class AssetServiceImplTest {
     @Mock
     private AssetRepository assetRepository;
 
+    @Mock
+    private OperationHistoryRepository operationHistoryRepository;
     @InjectMocks
     private AssetServiceImpl assetService;
 
     @Before
     public void setUp() {
-        assetService = new AssetServiceImpl(restTemplate, assetRepository);
+        assetService = new AssetServiceImpl(restTemplate, assetRepository, operationHistoryRepository);
     }
 
     /**

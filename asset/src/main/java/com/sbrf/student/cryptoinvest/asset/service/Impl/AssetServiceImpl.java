@@ -1,9 +1,12 @@
 package com.sbrf.student.cryptoinvest.asset.service.Impl;
 
-import com.sbrf.student.cryptoinvest.asset.api.cryptocurrencyservice.CryptoServiceResponse;
+import com.sbrf.student.cryptoinvest.asset.dto.api.cryptocurrencyservice.CryptoServiceResponse;
 import com.sbrf.student.cryptoinvest.asset.dto.AccountBalanceChangeDTO;
 import com.sbrf.student.cryptoinvest.asset.model.Asset;
+import com.sbrf.student.cryptoinvest.asset.model.OperationHistory;
+import com.sbrf.student.cryptoinvest.asset.model.OperationType;
 import com.sbrf.student.cryptoinvest.asset.repository.AssetRepository;
+import com.sbrf.student.cryptoinvest.asset.repository.OperationHistoryRepository;
 import com.sbrf.student.cryptoinvest.asset.service.AssetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -24,6 +28,7 @@ import java.util.List;
 public class AssetServiceImpl implements AssetService {
     private final RestTemplate restTemplate;
     private final AssetRepository assetRepository;
+    private final OperationHistoryRepository operationHistoryRepository;
 
     @Value("${CRYPTO_URL}")
     private String CRYPTOCURRENCY_SERVICE_URL;
@@ -91,7 +96,12 @@ public class AssetServiceImpl implements AssetService {
         assetRepository.save(asset);
         log.info("Актив успешно сохранен в базе данных: {}", asset);
 
-        // TODO: Обработка исключений, проверка баланса пользователя, взаимодействие с историей операций
+        /**
+         * Сохранение транзакции в историю операций
+         */
+        saveOperationHistory(asset, OperationType.buy, quantity);
+        log.info("Транзакция успешно сохранена в базу данных: {}, тип операции buy: {}, количество: {}",
+                asset, OperationType.buy, quantity);
     }
 
     @Override
@@ -128,13 +138,54 @@ public class AssetServiceImpl implements AssetService {
             log.info("Количество актива после продажи стало нулевым, актив обновлен: {}", asset);
         }
 
+        /**
+         * Сохранение актива в базу данных
+         */
         assetRepository.save(asset);
         log.info("Актив успешно сохранен в базе данных после продажи: {}", asset);
 
+        /**
+         * Сохранение транзакции в историю операций
+         */
+        saveOperationHistory(asset, OperationType.sell, quantity);
+        log.info("Транзакция успешно сохранена в базу данных: {}, тип операции sell: {}, количество: {}",
+        asset, OperationType.sell, quantity);
+    }
 
-        // TODO: Обработка исключений, проверка баланса пользователя, взаимодействие с историей операций
-        //  в каком формате лучше передавать исключения будет (потом);
-        //  Написать тесты
+    /**
+     * Сохранение операции в историю транзакций
+     * @param asset - актив пользователя
+     * @param operationType - тип операции (покупка/продажа)
+     * @param quantity - количество актива
+     */
+    private void saveOperationHistory(Asset asset, OperationType operationType, BigDecimal quantity) {
+        /**
+         * Получаем цену актива из сервиса CryptoCurrency
+         */
+        CryptoServiceResponse cryptoData = fetchCryptoData(asset.getCryptoId());
+
+        /**
+         * getPrice() возвращает цену за единицу
+         */
+        BigDecimal price = cryptoData.getPrice();
+
+        /**
+         * Расчет общей суммы операции
+         */
+        BigDecimal totalSum = price.multiply(quantity);
+
+        OperationHistory operationHistory = new OperationHistory();
+        operationHistory.setAsset(asset);
+        operationHistory.setCryptoId(asset.getCryptoId());
+        operationHistory.setOperationType(operationType);
+        operationHistory.setSumOperation(totalSum);
+        operationHistory.setQuantityCurrentOperation(quantity);
+        operationHistory.setPurchaseDate(LocalDateTime.now());
+        operationHistory.setQuantity(asset.getQuantity());
+
+        operationHistoryRepository.save(operationHistory);
+        log.info("Операция сохранена в историю: тип = {}, актив = {}, количество = {}, сумма = {}",
+                operationType, asset.getCryptoId(), quantity, totalSum);
     }
 
     /**
@@ -173,6 +224,4 @@ public class AssetServiceImpl implements AssetService {
             throw new RuntimeException("Не удалось получить данные о криптовалюте", e);
         }
     }
-
-    // TODO: Проверка на валидацию в контроллере реализовать, в сервисе проверка на счет и активы
 }

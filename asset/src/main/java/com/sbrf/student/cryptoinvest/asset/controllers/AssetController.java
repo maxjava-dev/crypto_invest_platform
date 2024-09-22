@@ -24,6 +24,7 @@ public class AssetController {
 
     /**
      * Получение списка активов пользователя которыми он владеет
+     *
      * @param userid - id пользователя
      * @return список купленных активов пользователя
      */
@@ -37,17 +38,18 @@ public class AssetController {
 
     /**
      * Обработка операций покупки/продажи актива
+     *
      * @param cryptoid - id актива
      * @param userid - id пользователя
      * @param quantity - количество актива для операции покупки/продажи
-     * @param operationType - тип операции (BUY или SELL)
+     * @param operationType - тип операции (buy или sell)
      */
     @PostMapping("/{operationType}")
     public ResponseEntity<Void> handleAssetTransaction(
             @RequestParam Long cryptoid,
             @RequestParam Long userid,
             @RequestParam BigDecimal quantity,
-            @PathVariable OperationType operationType) throws Exception {
+            @PathVariable String operationType) {
         log.info("Обработка транзакции: операция = {}, id актива = {}, id пользователя = {}, количество = {}",
                 operationType, cryptoid, userid, quantity);
         try {
@@ -64,26 +66,32 @@ public class AssetController {
 
     /**
      * Выполнение операции покупки/продажи актива
+     *
      * @param cryptoid - id актива
      * @param userid - id пользователя
      * @param quantity - количество актива для операции
      * @param operationType - тип операции (BUY или SELL)
      */
-    private void performOperation(Long cryptoid, Long userid, BigDecimal quantity, OperationType operationType) {
-        if (operationType == null || !EnumUtils.isValidEnum(OperationType.class, operationType.name())) {
+    private void performOperation(Long cryptoid, Long userid, BigDecimal quantity, String operationType) {
+        if (operationType == null || !EnumUtils.isValidEnum(OperationType.class, operationType.toLowerCase())) {
             log.error("Неверный тип операции: {}", operationType);
             throw new IllegalArgumentException("Неверный тип операции: " + operationType);
         }
 
-        switch (operationType) {
+        /**
+         * Преобразование String в Enum. Значения в enum в нижнем регистре
+         */
+        OperationType opType = OperationType.valueOf(operationType.toLowerCase());
+
+        switch (opType) {
             case buy:
                 log.info("Выполняется операция покупки актива: id актива = {}, id пользователя = {}, " +
-                                "количество = {}", cryptoid, userid, quantity);
+                        "количество = {}", cryptoid, userid, quantity);
                 assetService.buyAsset(cryptoid, userid, quantity);
                 break;
             case sell:
                 log.info("Выполняется операция продажи актива: id актива = {}, id пользователя = {}, " +
-                                "количество = {}", cryptoid, userid, quantity);
+                        "количество = {}", cryptoid, userid, quantity);
                 assetService.sellAsset(cryptoid, userid, quantity);
                 break;
             default:
@@ -91,9 +99,4 @@ public class AssetController {
                 throw new IllegalArgumentException("Неверный тип операции: " + operationType);
         }
     }
-
-    // TODO: методы для истории транзакций
-    //  Написать тесты
-    //  Дополнительная обработка исключений и валидация
-    // TODO: Проверка на валидацию в контроллере реализовать, в сервисе проверка на счет и активы
 }

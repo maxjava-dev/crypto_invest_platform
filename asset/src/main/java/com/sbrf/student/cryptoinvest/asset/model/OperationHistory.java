@@ -1,5 +1,6 @@
 package com.sbrf.student.cryptoinvest.asset.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -7,8 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * История операций конкретного клиента
- * TODO: реализовать в контроллере, сервисе и т.д.
+ * История операций клиента
  */
 @Entity
 @Data
@@ -25,22 +25,46 @@ public class OperationHistory {
      * Id актива(внешний ключ к таблице {@link Asset})
      */
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "assetId", nullable = false)
     private Asset asset;
 
     /**
-     * тип операции(покупка/продажа {@link OperationType})
+     * Id криптовалюты (поле, которое нужно для вывода в JSON)
+     */
+    @Column(nullable = false)
+    private Long cryptoId;
+
+    /**
+     * При загрузке объекта из бд заполняется поле cryptoId
+     */
+    @PostLoad
+    private void loadCryptoId() {
+        if (asset != null) {
+            this.cryptoId = asset.getCryptoId();
+        }
+    }
+
+    /**
+     * Тип операции(покупка/продажа {@link OperationType})
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OperationType operationType;
 
     /**
-     * сумма операции(покупки/продажи)
+     * Общая сумма операции(покупки/продажи) в данной транзакции
      */
     @Column(nullable = false)
     @PositiveOrZero(message = "Сумма операции не может быть отрицательной")
     private BigDecimal sumOperation;
+
+    /**
+     * Количество актива в данной транзакции
+     */
+    @Column(nullable = false)
+    @PositiveOrZero(message = "Количество актива не может быть отрицательным")
+    private BigDecimal quantityCurrentOperation;
 
     /**
      * Дата и время транзакции(время сервера)
@@ -50,7 +74,7 @@ public class OperationHistory {
     private LocalDateTime purchaseDate;
 
     /**
-     * Количество криптовалюты после операции у клиента на счете
+     * Общее количество криптовалюты после операции у клиента на счете(с учетом всех операций по этой валюте до)
      */
     @Column(nullable = false)
     @PositiveOrZero(message = "Переданное количество валюты превышает имеющееся")

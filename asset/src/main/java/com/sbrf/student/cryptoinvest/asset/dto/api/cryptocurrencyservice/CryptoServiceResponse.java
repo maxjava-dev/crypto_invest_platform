@@ -1,4 +1,4 @@
-package com.sbrf.student.cryptoinvest.asset.api.cryptocurrencyservice;
+package com.sbrf.student.cryptoinvest.asset.dto.api.cryptocurrencyservice;
 
 import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
@@ -37,12 +37,12 @@ public class CryptoServiceResponse {
 
     /**
      * Метод, который Jackson вызовет при нахождении неизвестных полей
+     *
       * @param key имя поля
      * @param value значение поля
      */
-    @JsonAnySetter
+    @JsonAnySetter // при обнаружении неизвестного поля оно должно быть добавлено в additionalProperties.
     public void setAdditionalProperty(String key, Object value) {
         additionalProperties.put(key, value);
     }
-    // TODO: Протестировать динамическое изменение полей потом(последние 2 поля)
 }
