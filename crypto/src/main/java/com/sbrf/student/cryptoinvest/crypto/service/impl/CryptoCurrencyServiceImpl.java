@@ -6,6 +6,7 @@ import com.sbrf.student.cryptoinvest.crypto.model.CryptoCurrency;
 import com.sbrf.student.cryptoinvest.crypto.model.HistoryItem;
 import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapIdListElement;
 import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapPriceElement;
+import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapPriceQuote;
 import com.sbrf.student.cryptoinvest.crypto.model.entity.CryptoCurrencyEntity;
 import com.sbrf.student.cryptoinvest.crypto.repository.CryptoCurrencyRepository;
 import com.sbrf.student.cryptoinvest.crypto.service.CryptoCurrencyService;
@@ -15,7 +16,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -47,13 +51,10 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
         return entities
                 .stream()
                 .map((entity) -> {
-                            var price = getPrice(
-                                    priceElementList
-                                            .getData()
-                                            .get(String.valueOf(entity.getExternalId()))
-                            );
-                            return new CryptoCurrency(entity.getId(), entity.getSymbol(), entity.getName(), entity.getDescription(),
-                                    entity.getLogo(), price);
+                            CryptoCurrency cryptoCurrency = new CryptoCurrency(entity.getId(), entity.getSymbol(),
+                                    entity.getName(), entity.getDescription(), entity.getLogo());
+                            fillPriceData(cryptoCurrency, priceElementList.getData().get(String.valueOf(entity.getExternalId())));
+                            return cryptoCurrency;
                         }
                 )
                 .sorted(Comparator.comparing(CryptoCurrency::getId))
@@ -89,8 +90,10 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
                 .findFirst()
                 .get();
 
-        return new CryptoCurrency(entity.getId(), entity.getSymbol(), entity.getName(), entity.getDescription(),
-                entity.getLogo(), getPrice(priceElement));
+        CryptoCurrency result = new CryptoCurrency(entity.getId(), entity.getSymbol(), entity.getName(), entity.getDescription(),
+                entity.getLogo());
+        fillPriceData(result, priceElement);
+        return result;
     }
 
     @Override
@@ -177,10 +180,15 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
     private static final int CRYPTOCURRENCY_COUNT = 50;
     private static final String BASE_CURRENCY = "USD";
 
-    private static BigDecimal getPrice(CoinMarketCapPriceElement element) {
-        return element
+    private static void fillPriceData(CryptoCurrency cryptoCurrency, CoinMarketCapPriceElement priceElement) {
+        CoinMarketCapPriceQuote quote = priceElement
                 .getQuote()
-                .get(BASE_CURRENCY)
-                .getPrice();
+                .get(BASE_CURRENCY);
+        cryptoCurrency.setPrice(quote.getPrice());
+        cryptoCurrency.setMarketCap(quote.getMarketCap());
+        cryptoCurrency.setPercentChange1h(quote.getPercentChange1h());
+        cryptoCurrency.setPercentChange24h(quote.getPercentChange24h());
+        cryptoCurrency.setPercentChange7d(quote.getPercentChange7d());
+        cryptoCurrency.setPercentChange30d(quote.getPercentChange30d());
     }
 }

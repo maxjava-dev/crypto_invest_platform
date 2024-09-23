@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,9 +60,12 @@ class CryptoCurrencyServiceImplUnitTest {
         when(coinMarketCapApi.getPriceList(any())).thenReturn(
                 new CoinMarketCapPriceList(
                         Map.of(
-                                "1", new CoinMarketCapPriceElement(1L, Map.of("USD", new CoinMarketCapPriceQuote(BigDecimal.TEN))),
-                                "2", new CoinMarketCapPriceElement(2L, Map.of("USD", new CoinMarketCapPriceQuote(BigDecimal.ZERO))),
-                                "3", new CoinMarketCapPriceElement(3L, Map.of("USD", new CoinMarketCapPriceQuote(BigDecimal.ONE)))
+                                "1", new CoinMarketCapPriceElement(1L, Map.of("USD",
+                                        new CoinMarketCapPriceQuote(BigDecimal.TEN, null, null, null, null, null))),
+                                "2", new CoinMarketCapPriceElement(2L, Map.of("USD",
+                                        new CoinMarketCapPriceQuote(BigDecimal.ZERO, null, null, null, null, null))),
+                                "3", new CoinMarketCapPriceElement(3L, Map.of("USD",
+                                        new CoinMarketCapPriceQuote(BigDecimal.ONE, null, null, null, null, null)))
                         )
                 )
         );
@@ -69,13 +73,16 @@ class CryptoCurrencyServiceImplUnitTest {
 
     @Test
     void getAllCryptoCurrencies() {
+        Map<String, Long> idMap = new HashMap<>();
+        idMap.put("BTC", 100L);
+        idMap.put("ETH", 200L);
+        idMap.put("USDT", 300L);
         when(repository.findAll()).thenReturn(List.of());
         when(repository.saveAll(any())).thenAnswer(i -> {
             var entityList = (List<CryptoCurrencyEntity>) i.getArguments()[0];
             Long id = 0L;
             for (CryptoCurrencyEntity entity : entityList) {
-                id += 1000L;
-                entity.setId(id);
+                entity.setId(idMap.get(entity.getSymbol()));
             }
             return entityList;
         });
