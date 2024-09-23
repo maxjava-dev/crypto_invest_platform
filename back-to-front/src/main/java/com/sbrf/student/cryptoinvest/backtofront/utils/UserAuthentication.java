@@ -1,6 +1,6 @@
 package com.sbrf.student.cryptoinvest.backtofront.utils;
 
-import com.sbrf.student.cryptoinvest.backtofront.models.User;
+import com.sbrf.student.cryptoinvest.backtofront.models.user.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

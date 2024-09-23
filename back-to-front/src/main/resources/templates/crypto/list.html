@@ -8,6 +8,31 @@
     <link rel="stylesheet" href="/assets/css/common.css">
 </head>
 <body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/assets/">Активы</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/crypto/">Криптовалюты</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+<div class="top-right mt-5">
+    <form th:action="@{/logout}" th:method="POST">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <p><span th:text="${username}"></span></p>
+        <input type="submit" class="btn btn-primary" value="Выход"/>
+    </form>
+    <div class="mt-2">
+        <p>Баланс: <span th:text="${balance}"></span> USD</p>
+        <a href="/account/topup" class="btn btn-primary text-center">Пополнить</a>
+    </div>
+</div>
 <div class="vh-100 d-flex">
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -42,10 +67,5 @@
         </div>
     </div>
 </div>
-<form class="top-right" th:action="@{/logout}" th:method="POST">
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-    <p><span th:text="${username}"></span></p>
-    <input type="submit" class="btn btn-primary" value="Выход"/>
-</form>
 </body>
 </html>
