@@ -28,14 +28,15 @@ public class CryptoCompareApiImpl implements CryptoCompareApi {
     private String apiKey;
 
     @Override
-    public CCHistoryResponse getHourlyHistoryData(String symbol) {
+    public CCHistoryResponse getHourlyHistoryData(String symbol, Long toTimeStamp) {
         log.info("getHourlyHistoryData called");
         Map<String, Object> params = new HashMap<>();
         params.put("symbol", symbol);
-        params.put("limit", 100);
+        params.put("limit", 2000);
         params.put("key", apiKey);
+        params.put("ts", toTimeStamp);
         CCHistoryResponse response = restTemplate.getForObject(
-                BASE_API_URL + "?fsym={symbol}&tsym=USD&limit={limit}&api_key={key}&api_key={key}",
+                BASE_API_URL + "?fsym={symbol}&tsym=USD&limit={limit}&api_key={key}&api_key={key}&toTs={ts}",
                 CCHistoryResponse.class,
                 params
         );

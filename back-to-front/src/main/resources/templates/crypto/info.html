@@ -6,7 +6,7 @@
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/css/common.css">
-    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
 </head>
 </head>
@@ -39,27 +39,58 @@
     </div>
 </div>
 <script th:inline="javascript">
-    let dataPoints = [[${data.historyItemList}]];
-    Highcharts.chart('chart', {
-        title: {
-            text: 'Изменения цены за последние 100 часов'
+    let dataPoints = [];
+    [[${data.historyItemList}]].forEach( (item) => dataPoints.push([item.time, item.price]))
+    Highcharts.setOptions({
+        lang: {
+            months: [
+                'Январь', 'Февраль', 'Март', 'Апрель',
+                'Май', 'Июнь', 'Июль', 'Август',
+                'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+            ],
+            weekdays: [
+                'ВС', 'ПН', 'ВТ', 'СР',
+                'ЧТ', 'ПТ', 'СБ'
+            ],
+            shortMonths: ['Янв', 'Фев', 'Март', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сент', 'Окт', 'Ноя', 'Дек'],
+        }
+    });
+    Highcharts.stockChart('chart', {
+        time: {
+            useUTC: false
         },
-        xAxis: {
-            categories: dataPoints.map(function(point) {
-                return point.time;
-            })
-        },
-        yAxis: {
-            title: {
-                text: 'Цена, USD'
+        rangeSelector: {
+            buttons: [{
+                type: 'day',
+                count: 1,
+                text: '1 д',
+                title: '1 день'
+            }, {
+                type: 'day',
+                count: 7,
+                text: '7 д',
+                title: 'Неделя'
+            }, {
+                type: 'month',
+                count: 1,
+                text: 'Мес',
+                title: 'Месяц'
+            }, {
+                type: 'all',
+                text: 'Все',
+                title: 'Все'
+            }],
+            selected: 1,
+            inputBoxStyle: {
+                right: '80px',
             }
         },
+        title: {
+            text: 'График изменения цены'
+        },
         series: [{
-            type: 'line',
             name: [[${data.cryptoCurrency.symbol}]],
-            data: dataPoints.map(function(point) {
-                return point.price;
-            })
+            data: dataPoints
         }]
     });
 </script>

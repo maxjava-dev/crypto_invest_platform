@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 public class ChartItem {
 
     /**
-     * Время в форматированном виде
+     * Время
      */
-    private String time;
+    private Long time;
 
     /**
      * Цена

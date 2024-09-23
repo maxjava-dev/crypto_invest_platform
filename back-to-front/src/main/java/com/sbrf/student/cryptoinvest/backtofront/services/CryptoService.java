@@ -7,8 +7,7 @@ import com.sbrf.student.cryptoinvest.backtofront.models.CryptoCurrencyInfoModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
 
 /**
  * Сервис для получения данных о криптовалютах
@@ -42,13 +41,7 @@ public class CryptoService {
             var historyItems = response.get();
             var chartData = historyItems
                     .stream()
-                    .map(item -> {
-                                SimpleDateFormat sm = new SimpleDateFormat("dd-MM-yyyy hh:mm", Locale.getDefault());
-                                sm.setTimeZone(TimeZone.getDefault());
-                                String strDate = sm.format(new Date(item.getTime() * 1000));
-                                return new ChartItem(strDate, item.getPrice());
-                            }
-                    )
+                    .map(item -> new ChartItem(item.getTime() * 1000, item.getPrice()))
                     .toList();
             return new CryptoCurrencyInfoModel(crypto.get(), chartData);
         } else {
