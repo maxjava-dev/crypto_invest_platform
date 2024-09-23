@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +17,7 @@ class CryptoCompareApiImplTest {
 
     @Test
     void getHourlyHistoryData() {
-        var result = underTest.getHourlyHistoryData("BTC");
+        var result = underTest.getHourlyHistoryData("BTC", new Date().getTime());
 
         assertNotNull(result);
         assertEquals(101, result.getData().getData().size());

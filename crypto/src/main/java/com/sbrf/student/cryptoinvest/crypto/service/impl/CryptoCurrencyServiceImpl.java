@@ -4,6 +4,7 @@ import com.sbrf.student.cryptoinvest.crypto.api.CoinMarketCapApi;
 import com.sbrf.student.cryptoinvest.crypto.api.CryptoCompareApi;
 import com.sbrf.student.cryptoinvest.crypto.model.CryptoCurrency;
 import com.sbrf.student.cryptoinvest.crypto.model.HistoryItem;
+import com.sbrf.student.cryptoinvest.crypto.model.data.CCHistoryResponse;
 import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapIdListElement;
 import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapPriceElement;
 import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapPriceQuote;
@@ -16,10 +17,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -100,8 +98,23 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
     public List<HistoryItem> getHistoryData(String symbol) {
         log.info("getHistoryData called");
 
-        var response = cryptoCompareApi.getHourlyHistoryData(symbol);
 
+        var toTimeStamp = new Date().getTime();
+        var resultList = new ArrayList<List<HistoryItem>>();
+        final int DEPTH = 4;
+        for (int k = 1; k <= DEPTH; k++) {
+            var response = cryptoCompareApi.getHourlyHistoryData(symbol, toTimeStamp);
+            var list = convertHistoryResponseToHistoryItemList(response);
+            toTimeStamp = list.get(0).getTime();
+            resultList.add(0, list);
+        }
+        var result = new ArrayList<HistoryItem>();
+        resultList.forEach(result::addAll);
+
+        return result;
+    }
+
+    private List<HistoryItem> convertHistoryResponseToHistoryItemList(CCHistoryResponse response) {
         return response
                 .getData()
                 .getData()
