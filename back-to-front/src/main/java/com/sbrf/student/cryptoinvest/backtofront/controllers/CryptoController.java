@@ -1,9 +1,10 @@
 package com.sbrf.student.cryptoinvest.backtofront.controllers;
 
 import com.sbrf.student.cryptoinvest.backtofront.api.AssetApi;
+import com.sbrf.student.cryptoinvest.backtofront.api.UserApi;
 import com.sbrf.student.cryptoinvest.backtofront.dto.CryptoOperationDTO;
-import com.sbrf.student.cryptoinvest.backtofront.models.CryptoCurrency;
-import com.sbrf.student.cryptoinvest.backtofront.models.User;
+import com.sbrf.student.cryptoinvest.backtofront.models.crypto.CryptoCurrency;
+import com.sbrf.student.cryptoinvest.backtofront.models.user.User;
 import com.sbrf.student.cryptoinvest.backtofront.services.CryptoService;
 import com.sbrf.student.cryptoinvest.backtofront.utils.UserAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,35 +20,45 @@ public class CryptoController {
 
     private final CryptoService cryptoService;
     private final AssetApi assetApi;
+    private final UserApi userApi;
 
     @Autowired
-    public CryptoController(CryptoService cryptoService, AssetApi assetApi) {
+    public CryptoController(CryptoService cryptoService, AssetApi assetApi, UserApi userApi) {
         this.cryptoService = cryptoService;
         this.assetApi = assetApi;
+        this.userApi = userApi;
     }
 
     @GetMapping("/")
-    public String cryptoPage(Model model) {
+    public String cryptoListPage(Model model) {
         User currentUser = UserAuthentication.getCurrentUser();
         model.addAttribute("username", currentUser.getVisibleUserName());
-        List<CryptoCurrency> cryptos = cryptoService.getAll();
+        userApi.getUserByUsername(currentUser.getUsername())
+                .ifPresent(user -> model.addAttribute("balance", user.getBalance()));
+
+        List<CryptoCurrency> cryptos = cryptoService.getAllList();
         model.addAttribute("cryptos", cryptos);
-        return "crypto/top";
+        return "crypto/list";
     }
 
     @GetMapping("/{symbol}")
-    public String cryptoInfoPage(Model model, @PathVariable String symbol) {
+    public String cryptoDetailsPage(Model model, @PathVariable String symbol) {
         User currentUser = UserAuthentication.getCurrentUser();
         model.addAttribute("username", currentUser.getVisibleUserName());
+        userApi.getUserByUsername(currentUser.getUsername())
+                .ifPresent(user -> model.addAttribute("balance", user.getBalance()));
+
         var pageData = cryptoService.getCryptoCurrencyInfoModel(symbol);
         model.addAttribute("data", pageData);
-        return "crypto/info";
+        return "crypto/details";
     }
 
     @GetMapping("/{id}/buy")
     public String cryptoBuyPage(Model model, @PathVariable String id) {
         User currentUser = UserAuthentication.getCurrentUser();
         model.addAttribute("username", currentUser.getVisibleUserName());
+        userApi.getUserByUsername(currentUser.getUsername())
+                .ifPresent(user -> model.addAttribute("balance", user.getBalance()));
         return "crypto/buy";
     }
 
@@ -65,6 +76,8 @@ public class CryptoController {
     public String cryptoSellPage(Model model, @PathVariable String id) {
         User currentUser = UserAuthentication.getCurrentUser();
         model.addAttribute("username", currentUser.getVisibleUserName());
+        userApi.getUserByUsername(currentUser.getUsername())
+                .ifPresent(user -> model.addAttribute("balance", user.getBalance()));
         return "crypto/sell";
     }
 

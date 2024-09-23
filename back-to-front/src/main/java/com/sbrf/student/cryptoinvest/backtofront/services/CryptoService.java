@@ -1,14 +1,15 @@
 package com.sbrf.student.cryptoinvest.backtofront.services;
 
 import com.sbrf.student.cryptoinvest.backtofront.api.CryptoApi;
-import com.sbrf.student.cryptoinvest.backtofront.models.ChartItem;
-import com.sbrf.student.cryptoinvest.backtofront.models.CryptoCurrency;
-import com.sbrf.student.cryptoinvest.backtofront.models.CryptoCurrencyInfoModel;
+import com.sbrf.student.cryptoinvest.backtofront.models.crypto.ChartItem;
+import com.sbrf.student.cryptoinvest.backtofront.models.crypto.CryptoCurrency;
+import com.sbrf.student.cryptoinvest.backtofront.models.crypto.CryptoCurrencyInfoModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Сервис для получения данных о криптовалютах
@@ -22,13 +23,22 @@ public class CryptoService {
     /**
      * @return список всех криптовалют
      */
-    public List<CryptoCurrency> getAll() {
-        var cryptos = cryptoApi.getAll();
+    public List<CryptoCurrency> getAllList() {
+        Optional<List<CryptoCurrency>> cryptos = cryptoApi.getAll();
         if (cryptos.isPresent()) {
             return cryptos.get();
         } else {
             throw new RuntimeException("Error getting all crypto");
         }
+    }
+
+    /**
+     * @return словарь всех криптовалют (ключ - id криптовалюты)
+     */
+    public Map<Long, CryptoCurrency> getAllMap() {
+        return getAllList()
+            .stream()
+            .collect(Collectors.toMap(CryptoCurrency::getId, crypto -> crypto));
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.sbrf.student.cryptoinvest.backtofront.api;
 
 import com.sbrf.student.cryptoinvest.backtofront.dto.AccountPutBalanceTopUpDTO;
-import com.sbrf.student.cryptoinvest.backtofront.models.User;
+import com.sbrf.student.cryptoinvest.backtofront.models.user.User;
 import com.sbrf.student.cryptoinvest.backtofront.utils.RestTemplateClass;
 import com.sbrf.student.cryptoinvest.backtofront.utils.UserAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;

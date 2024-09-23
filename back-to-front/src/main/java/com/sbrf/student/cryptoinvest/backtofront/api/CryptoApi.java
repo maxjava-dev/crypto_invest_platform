@@ -1,7 +1,7 @@
 package com.sbrf.student.cryptoinvest.backtofront.api;
 
-import com.sbrf.student.cryptoinvest.backtofront.models.CryptoCurrency;
-import com.sbrf.student.cryptoinvest.backtofront.models.HistoryItem;
+import com.sbrf.student.cryptoinvest.backtofront.models.crypto.CryptoCurrency;
+import com.sbrf.student.cryptoinvest.backtofront.models.crypto.CryptoHistoryItem;
 import com.sbrf.student.cryptoinvest.backtofront.utils.RestTemplateClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,9 +76,9 @@ public class CryptoApi {
      * @param symbol символ криптовалюты
      * @return опциональный список цен
      */
-    public Optional<List<HistoryItem>> getHistory(String symbol) {
+    public Optional<List<CryptoHistoryItem>> getHistory(String symbol) {
         try {
-            ResponseEntity<HistoryItem[]> response = restTemplate.getForEntity(BASE_CRYPTO_URL + "/crypto/history/" + symbol, HistoryItem[].class);
+            ResponseEntity<CryptoHistoryItem[]> response = restTemplate.getForEntity(BASE_CRYPTO_URL + "/crypto/history/" + symbol, CryptoHistoryItem[].class);
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 return Optional.of(Arrays.stream(response.getBody()).toList());
             } else {

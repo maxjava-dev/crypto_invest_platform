@@ -1,7 +1,7 @@
 package com.sbrf.student.cryptoinvest.backtofront.services;
 
 import com.sbrf.student.cryptoinvest.backtofront.api.UserApi;
-import com.sbrf.student.cryptoinvest.backtofront.models.User;
+import com.sbrf.student.cryptoinvest.backtofront.models.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

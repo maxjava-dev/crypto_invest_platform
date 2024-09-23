@@ -1,4 +1,4 @@
-package com.sbrf.student.cryptoinvest.backtofront.models;
+package com.sbrf.student.cryptoinvest.backtofront.models.crypto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

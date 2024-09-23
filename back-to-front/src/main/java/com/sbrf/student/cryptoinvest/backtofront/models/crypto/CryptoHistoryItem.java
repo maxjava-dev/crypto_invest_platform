@@ -1,4 +1,4 @@
-package com.sbrf.student.cryptoinvest.backtofront.models;
+package com.sbrf.student.cryptoinvest.backtofront.models.crypto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 /**
- * Модель элемента истории цен
+ * Модель элемента истории цен криптовалюты
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HistoryItem {
+public class CryptoHistoryItem {
 
     /**
      * Время в секундах
