@@ -27,7 +27,10 @@ public class CryptoService {
     public List<CryptoCurrency> getAllList() {
         Optional<List<CryptoCurrency>> cryptos = cryptoApi.getAll();
         if (cryptos.isPresent()) {
-            return cryptos.get();
+            return cryptos.get()
+                    .stream()
+                    .sorted(Comparator.comparing(CryptoCurrency::getMarketCap).reversed())
+                    .toList();
         } else {
             throw new RuntimeException("Error getting all crypto");
         }
