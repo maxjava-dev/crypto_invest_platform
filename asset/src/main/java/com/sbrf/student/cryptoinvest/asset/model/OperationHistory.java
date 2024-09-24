@@ -67,6 +67,12 @@ public class OperationHistory {
     private BigDecimal quantityCurrentOperation;
 
     /**
+     * Прибыль или убыток по данной транзакции
+     */
+    @Column(nullable = false)
+    private BigDecimal incomeCurrentOperation;
+
+    /**
      * Дата и время транзакции(время сервера)
      */
     @Column(nullable = false)

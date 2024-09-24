@@ -34,7 +34,10 @@ public class CryptoController {
         User currentUser = UserAuthentication.getCurrentUser();
         model.addAttribute("username", currentUser.getVisibleUserName());
         userApi.getUserByUsername(currentUser.getUsername())
-                .ifPresent(user -> model.addAttribute("balance", user.getBalance()));
+                .ifPresent(user -> {
+                    model.addAttribute("balance", user.getBalance());
+                    model.addAttribute("income", user.getIncome());
+                });
 
         List<CryptoCurrency> cryptos = cryptoService.getAllList();
         model.addAttribute("cryptos", cryptos);
@@ -46,7 +49,10 @@ public class CryptoController {
         User currentUser = UserAuthentication.getCurrentUser();
         model.addAttribute("username", currentUser.getVisibleUserName());
         userApi.getUserByUsername(currentUser.getUsername())
-                .ifPresent(user -> model.addAttribute("balance", user.getBalance()));
+                .ifPresent(user -> {
+                    model.addAttribute("balance", user.getBalance());
+                    model.addAttribute("income", user.getIncome());
+                });
 
         var pageData = cryptoService.getCryptoCurrencyInfoModel(symbol);
         model.addAttribute("data", pageData);
@@ -58,7 +64,10 @@ public class CryptoController {
         User currentUser = UserAuthentication.getCurrentUser();
         model.addAttribute("username", currentUser.getVisibleUserName());
         userApi.getUserByUsername(currentUser.getUsername())
-                .ifPresent(user -> model.addAttribute("balance", user.getBalance()));
+                .ifPresent(user -> {
+                    model.addAttribute("balance", user.getBalance());
+                    model.addAttribute("income", user.getIncome());
+                });
         return "crypto/buy";
     }
 
@@ -77,7 +86,10 @@ public class CryptoController {
         User currentUser = UserAuthentication.getCurrentUser();
         model.addAttribute("username", currentUser.getVisibleUserName());
         userApi.getUserByUsername(currentUser.getUsername())
-                .ifPresent(user -> model.addAttribute("balance", user.getBalance()));
+                .ifPresent(user -> {
+                    model.addAttribute("balance", user.getBalance());
+                    model.addAttribute("income", user.getIncome());
+                });
         return "crypto/sell";
     }
 

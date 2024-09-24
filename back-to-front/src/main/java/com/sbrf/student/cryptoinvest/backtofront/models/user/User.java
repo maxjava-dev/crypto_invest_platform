@@ -43,6 +43,11 @@ public class User implements UserDetails {
     private String balance;
 
     /**
+     * Прибыль или убыток счета клиента.
+     */
+    private String income;
+
+    /**
      * Конструктор по умолчанию.
      */
     public User() {}

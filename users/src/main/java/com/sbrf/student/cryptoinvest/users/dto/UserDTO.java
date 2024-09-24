@@ -41,4 +41,9 @@ public class UserDTO {
      * Баланс счета.
      */
     private String balance;
+
+    /**
+     * Прибыль или убыток счета.
+     */
+    private String income;
 }

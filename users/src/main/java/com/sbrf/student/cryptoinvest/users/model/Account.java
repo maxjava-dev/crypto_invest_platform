@@ -29,6 +29,12 @@ public class Account {
     private BigDecimal balance;
 
     /**
+     * Зафиксированная прибыль или убыток.
+     */
+    @Column
+    private BigDecimal income;
+
+    /**
      * Клиент, которому принадлежит счет.
      */
     @OneToOne(mappedBy = "account")

@@ -30,18 +30,19 @@
     </form>
     <div class="mt-2">
         <p>Баланс: <span th:text="${balance}"></span> USD</p>
+        <p>Прибыль: <span th:text="${income}"></span> USD</p>
         <a href="/account/topup" class="btn btn-primary text-center">Пополнить</a>
     </div>
 </div>
 <div class="vh-100 d-flex justify-content-center align-items-center">
     <div class="container mb-5">
         <div class="row justify-content-center">
-            <div class="col-md-9">
+            <div class="col-md-12">
                 <div>
                     <table class="table table-striped table-bordered">
                         <thead>
                         <tr>
-                            <th colspan="9" class="text-center">Ваши активы</th>
+                            <th colspan="11" class="text-center">Ваши активы</th>
                         </tr>
                         <tr th:if="${assets.isEmpty()}">
                             <th class="text-center" style="font-weight: normal">У вас нет активов</th>
@@ -49,7 +50,9 @@
                         <tr th:unless="${assets.isEmpty()}">
                             <th class="text-center">Название</th>
                             <th class="text-center">Количество</th>
-                            <th class="text-center">Стоимость (USD)</th>
+                            <th class="text-center">Стоимость на момент покупки (USD)</th>
+                            <th class="text-center">Текущая стоимость (USD)</th>
+                            <th class="text-center">Прибыль или убыток (USD)</th>
                             <th class="text-center">Действия</th>
                         </tr>
                         </thead>
@@ -61,8 +64,13 @@
                                 <span th:text="${asset.crypto.symbol}"></span>
                             </td>
                             <td class="text-center" th:text="${asset.quantity}"></td>
-                            <td class="text-center" th:text="${asset.quantity == 0 ? 0 : asset.crypto.price * asset.quantity}"></td>
-                            <td class="text-center">
+                            <td class="text-center" th:text="${#numbers.formatDecimal(asset.cost, 1, 'DEFAULT', 2, 'POINT')}"></td>
+                            <td class="text-center" th:text="${#numbers.formatDecimal(asset.getCurrentCost(), 1, 'DEFAULT', 2, 'POINT')}"></td>
+                            <td class="text-center"
+                                th:classappend="${asset.getIncome().signum() >= 0 ? 'text-success' : 'text-danger'}"
+                                th:text="${asset.getFormattedIncome()}"
+                            ></td>
+                            <td class="text-center col-md-3">
                                 <a th:href="@{/crypto/{id}/buy(id=${asset.crypto.id})}" class="btn btn-primary">Купить</a>
                                 <a th:href="@{/crypto/{id}/sell(id=${asset.crypto.id})}" class="btn btn-primary">Продать</a>
                                 <a th:href="@{/crypto/{symbol}(symbol=${asset.crypto.symbol})}" class="btn btn-primary">Детали</a>

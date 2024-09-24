@@ -42,6 +42,11 @@ public class OperationHistoryItem {
     private BigDecimal quantityCurrentOperation;
 
     /**
+     * Прибыль или убыток актива от данной транзакции
+     */
+    private BigDecimal incomeCurrentOperation;
+
+    /**
      * Дата и время транзакции(время сервера)
      */
     private LocalDateTime purchaseDate;

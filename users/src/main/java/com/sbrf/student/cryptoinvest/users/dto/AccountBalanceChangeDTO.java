@@ -22,11 +22,26 @@ public class AccountBalanceChangeDTO {
      */
     private String amount;
 
+    /**
+     * На сколько нужно изменить прибыль.
+     */
+    private String income;
 
     /**
      * @return На сколько нужно изменить счет в BigDecimal.
      */
     public BigDecimal getAmount() {
         return new BigDecimal(amount);
+    }
+
+    /**
+     * @return На сколько нужно изменить прибыль в BigDecimal.
+     */
+    public BigDecimal getIncome() {
+        if (income == null) {
+            return BigDecimal.ZERO;
+        } else {
+            return new BigDecimal(income);
+        }
     }
 }

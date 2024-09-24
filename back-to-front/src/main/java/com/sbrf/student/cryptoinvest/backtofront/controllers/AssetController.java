@@ -44,7 +44,10 @@ public class AssetController {
         User currentUser = UserAuthentication.getCurrentUser();
         model.addAttribute("username", currentUser.getVisibleUserName());
         userApi.getUserByUsername(currentUser.getUsername())
-            .ifPresent(user -> model.addAttribute("balance", user.getBalance()));
+                .ifPresent(user -> {
+                    model.addAttribute("balance", user.getBalance());
+                    model.addAttribute("income", user.getIncome());
+                });
 
         List<Asset> assets = assetService.getAssets(currentUser.getId());
         List<Asset> notEmptyAssets = assets.stream()
@@ -72,7 +75,10 @@ public class AssetController {
         User currentUser = UserAuthentication.getCurrentUser();
         model.addAttribute("username", currentUser.getVisibleUserName());
         userApi.getUserByUsername(currentUser.getUsername())
-                .ifPresent(user -> model.addAttribute("balance", user.getBalance()));
+                .ifPresent(user -> {
+                    model.addAttribute("balance", user.getBalance());
+                    model.addAttribute("income", user.getIncome());
+                });
 
         List<OperationHistoryItem> operationHistory = assetService.getOperationHistory(currentUser.getId());
         if (!operationHistory.isEmpty()) {

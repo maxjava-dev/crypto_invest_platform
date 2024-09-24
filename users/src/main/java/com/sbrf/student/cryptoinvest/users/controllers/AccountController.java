@@ -36,11 +36,13 @@ public class AccountController {
     public ResponseEntity<Void> topUp(@RequestBody AccountBalanceChangeDTO balanceChangeDTO) {
         Long userId = balanceChangeDTO.getUserId();
         BigDecimal amount = balanceChangeDTO.getAmount();
+        BigDecimal income = balanceChangeDTO.getIncome();
 
         Optional<User> user = userRepository.findById(userId);
         if (user.isPresent()) {
             Account account = user.get().getAccount();
             account.setBalance(account.getBalance().add(amount));
+            account.setIncome(account.getIncome().add(income));
             accountRepository.save(account);
             return ResponseEntity.ok().build();
         } else {
@@ -56,12 +58,14 @@ public class AccountController {
     public ResponseEntity<Void> withdraw(@RequestBody AccountBalanceChangeDTO balanceChangeDTO) {
         Long userId = balanceChangeDTO.getUserId();
         BigDecimal amount = balanceChangeDTO.getAmount();
+        BigDecimal income = balanceChangeDTO.getIncome();
 
         Optional<User> user = userRepository.findById(userId);
         if (user.isPresent()) {
             Account account = user.get().getAccount();
             if (account.getBalance().compareTo(amount) >= 0) {
                 account.setBalance(account.getBalance().subtract(amount));
+                account.setIncome(account.getIncome().subtract(income));
                 accountRepository.save(account);
                 return ResponseEntity.ok().build();
             } else {
