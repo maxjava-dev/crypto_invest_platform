@@ -30,6 +30,7 @@
     </form>
     <div class="mt-2">
         <p>Баланс: <span th:text="${balance}"></span> USD</p>
+        <p>Прибыль: <span th:text="${income}"></span> USD</p>
         <a href="/account/topup" class="btn btn-primary text-center">Пополнить</a>
     </div>
 </div>
@@ -40,7 +41,7 @@
                 <table class="table table-striped table-bordered">
                     <thead>
                     <tr>
-                        <th colspan="9" class="text-center">История операций с активами</th>
+                        <th colspan="10" class="text-center">История операций с активами</th>
                     </tr>
                     <tr>
                         <th class="text-center">Дата</th>
@@ -49,6 +50,7 @@
                         <th class="text-center">Количество</th>
                         <th class="text-center">Стоимость (USD)</th>
                         <th class="text-center">Остаток</th>
+                        <th class="text-center">Прибыль (USD)</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -61,8 +63,9 @@
                             <span th:text="${item.crypto.symbol}"></span>
                         </td>
                         <td class="text-center" th:text="${item.quantityCurrentOperation}"></td>
-                        <td class="text-center" th:text="${item.sumOperation}"></td>
+                        <td class="text-center" th:text="${#numbers.formatDecimal(item.sumOperation, 1, 'DEFAULT', 2, 'POINT')}"></td>
                         <td class="text-center" th:text="${item.quantity}"></td>
+                        <td class="text-center" th:text="${#numbers.formatDecimal(item.incomeCurrentOperation, 1, 'DEFAULT', 2, 'POINT')}"></td>
                     </tr>
                     </tbody>
                 </table>

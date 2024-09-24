@@ -23,6 +23,11 @@ public class AccountBalanceChangeDTO {
     private String amount;
 
     /**
+     * На сколько нужно изменить прибыль.
+     */
+    private String income;
+
+    /**
      * @return На сколько нужно изменить счет в BigDecimal.
      */
     public BigDecimal getAmount() {

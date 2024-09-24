@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class AssetServiceImpl implements AssetService {
         /**
          * Проверка и обновление баланса пользователя, уменьшая его на сумму покупки
          */
-        updateUserBalance(userId, totalCost.negate());
+        updateUserBalance(userId, totalCost.negate(), BigDecimal.ZERO);
 
         /**
          * Проверка существования актива для данного пользователя и криптовалюты(была ли уже операция с
@@ -81,13 +82,15 @@ public class AssetServiceImpl implements AssetService {
             asset.setUserId(userId);
             asset.setCryptoId(cryptoId);
             asset.setQuantity(quantity);
+            asset.setCost(totalCost);
             log.info("Создан новый актив: {}", asset);
         } else {
             /**
-             * Если актив существует, происходит обновление количества актива
+             * Если актив существует, происходит обновление количества и стоимости актива
              */
             asset.setQuantity(asset.getQuantity().add(quantity));
-            log.info("Актив уже существует. Обновлено его количество: {}", asset);
+            asset.setCost(asset.getCost().add(totalCost));
+            log.info("Актив уже существует. Обновлено его количество и стоимость: {}", asset);
         }
 
         /**
@@ -99,9 +102,9 @@ public class AssetServiceImpl implements AssetService {
         /**
          * Сохранение транзакции в историю операций
          */
-        saveOperationHistory(asset, OperationType.buy, quantity);
-        log.info("Транзакция успешно сохранена в базу данных: {}, тип операции buy: {}, количество: {}",
-                asset, OperationType.buy, quantity);
+        saveOperationHistory(asset, OperationType.buy, quantity, totalCost, BigDecimal.ZERO);
+        log.info("Транзакция успешно сохранена в базу данных: {}, тип операции buy: {}, количество: {}, сумма {}",
+                asset, OperationType.buy, quantity, totalCost);
     }
 
     @Override
@@ -121,14 +124,18 @@ public class AssetServiceImpl implements AssetService {
         }
 
         /**
-         * Обновление количества актива
+         * Обновление количества и стоимости актива
          */
-        asset.setQuantity(asset.getQuantity().subtract(quantity));
+        BigDecimal newQuantity = asset.getQuantity().subtract(quantity);
+        BigDecimal newCost = calculateNewCost(asset.getCost(), asset.getQuantity(), newQuantity);
+        BigDecimal income = totalRevenue.subtract(asset.getCost()).add(newCost);
+        asset.setQuantity(newQuantity);
+        asset.setCost(newCost);
 
         /**
          * Проверка и обновление баланса пользователя, увеличение его на сумму продажи
          */
-        updateUserBalance(userId, totalRevenue);
+        updateUserBalance(userId, totalRevenue, income);
 
         /**
          * Если количество после продажи равно нулю, не удаляем запись в бд, ставим количество 0
@@ -147,9 +154,21 @@ public class AssetServiceImpl implements AssetService {
         /**
          * Сохранение транзакции в историю операций
          */
-        saveOperationHistory(asset, OperationType.sell, quantity);
+        saveOperationHistory(asset, OperationType.sell, quantity, totalRevenue, income);
         log.info("Транзакция успешно сохранена в базу данных: {}, тип операции sell: {}, количество: {}",
         asset, OperationType.sell, quantity);
+    }
+
+    /**
+     * Расчет стоимости актива на момент покупки
+     * @param oldCost - прежняя стоимость актива
+     * @param oldQuantity - прежнее количество
+     * @param newQuantity - новое количество
+     * @return новая стоимость актива
+     */
+    private BigDecimal calculateNewCost(BigDecimal oldCost, BigDecimal oldQuantity, BigDecimal newQuantity) {
+        return oldQuantity.compareTo(newQuantity) == 0 ? BigDecimal.ZERO :
+                oldCost.multiply(newQuantity).divide(oldQuantity, RoundingMode.HALF_UP);
     }
 
     /**
@@ -157,22 +176,15 @@ public class AssetServiceImpl implements AssetService {
      * @param asset - актив пользователя
      * @param operationType - тип операции (покупка/продажа)
      * @param quantity - количество актива
+     * @param totalSum - стоимость операции
+     * @param income - прибыль или убыток от операции
      */
-    private void saveOperationHistory(Asset asset, OperationType operationType, BigDecimal quantity) {
+    private void saveOperationHistory(Asset asset, OperationType operationType, BigDecimal quantity, BigDecimal totalSum,
+                                      BigDecimal income) {
         /**
          * Получаем цену актива из сервиса CryptoCurrency
          */
         CryptoServiceResponse cryptoData = fetchCryptoData(asset.getCryptoId());
-
-        /**
-         * getPrice() возвращает цену за единицу
-         */
-        BigDecimal price = cryptoData.getPrice();
-
-        /**
-         * Расчет общей суммы операции
-         */
-        BigDecimal totalSum = price.multiply(quantity);
 
         OperationHistory operationHistory = new OperationHistory();
         operationHistory.setAsset(asset);
@@ -180,25 +192,28 @@ public class AssetServiceImpl implements AssetService {
         operationHistory.setOperationType(operationType);
         operationHistory.setSumOperation(totalSum);
         operationHistory.setQuantityCurrentOperation(quantity);
+        operationHistory.setIncomeCurrentOperation(income);
         operationHistory.setPurchaseDate(LocalDateTime.now());
         operationHistory.setQuantity(asset.getQuantity());
 
         operationHistoryRepository.save(operationHistory);
-        log.info("Операция сохранена в историю: тип = {}, актив = {}, количество = {}, сумма = {}",
-                operationType, asset.getCryptoId(), quantity, totalSum);
+        log.info("Операция сохранена в историю: тип = {}, актив = {}, количество = {}, сумма = {}, прибыль = {}",
+                operationType, asset.getCryptoId(), quantity, totalSum, income);
     }
 
     /**
      * Вспомогательный метод для проверки и обновления баланса пользователя, обращение к сервису users
      * @param userId ID пользователя, для которого нужно обновить баланс
      * @param amount сумма операции
+     * @param income зафиксированная прибыль или убыток
      */
-    private void updateUserBalance(Long userId, BigDecimal amount) {
+    private void updateUserBalance(Long userId, BigDecimal amount, BigDecimal income) {
         /**
          * Преобразование в String для корректной передачи dto
          */
         String amountStr = amount.toPlainString();
-        AccountBalanceChangeDTO balanceChangeDTO = new AccountBalanceChangeDTO(userId, amountStr);
+        String incomeStr = income.toPlainString();
+        AccountBalanceChangeDTO balanceChangeDTO = new AccountBalanceChangeDTO(userId, amountStr, incomeStr);
 
         log.info("Обновление баланса для пользователя: {} на сумму: {}", userId, amountStr);
 

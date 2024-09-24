@@ -34,12 +34,14 @@ public class AssetRepositoryTest {
         asset1.setUserId(1L);
         asset1.setCryptoId(100L);
         asset1.setQuantity(BigDecimal.valueOf(10.5));
+        asset1.setCost(BigDecimal.valueOf(105));
         assetRepository.save(asset1);
 
         asset2 = new Asset();
         asset2.setUserId(1L);
         asset2.setCryptoId(101L);
         asset2.setQuantity(BigDecimal.valueOf(20.0));
+        asset2.setCost(BigDecimal.valueOf(200));
         assetRepository.save(asset2);
     }
 

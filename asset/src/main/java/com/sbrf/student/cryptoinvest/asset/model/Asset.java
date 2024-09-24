@@ -41,6 +41,13 @@ public class Asset {
     private BigDecimal quantity;
 
     /**
+     * Стоимость криптовалюты на момент покупки
+     */
+    @Column(nullable = false)
+    @PositiveOrZero(message = "Стоимость должна быть больше или равна 0")
+    private BigDecimal cost;
+
+    /**
      * История операций, связанных с этим активом (для оптимизации)
      */
     @OneToMany(mappedBy = "asset")

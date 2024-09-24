@@ -42,6 +42,7 @@ public class UserController {
         User newUser = new User(userDTO);
         Account newAccount = new Account();
         newAccount.setBalance(BigDecimal.ZERO);
+        newAccount.setIncome(BigDecimal.ZERO);
         newUser.setAccount(newAccount);
 
         // TODO: Переписать работу с ошибками - https://tracker.yandex.ru/KRIPTOVALYUTY-16

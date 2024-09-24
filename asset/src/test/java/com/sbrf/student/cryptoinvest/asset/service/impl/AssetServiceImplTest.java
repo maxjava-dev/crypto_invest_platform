@@ -81,8 +81,9 @@ public class AssetServiceImplTest {
         BigDecimal quantity = BigDecimal.valueOf(2);
         BigDecimal price = BigDecimal.valueOf(100);
         BigDecimal existingQuantity = BigDecimal.valueOf(5);
+        BigDecimal existingCost = BigDecimal.valueOf(500);
         mockCryptoServiceResponse(price);
-        Asset existingAsset = createExistingAsset(userId, cryptoId, existingQuantity);
+        Asset existingAsset = createExistingAsset(userId, cryptoId, existingQuantity, existingCost);
 
         /**
          * Обновление баланса пользователя
@@ -116,8 +117,9 @@ public class AssetServiceImplTest {
         BigDecimal quantityToSell = BigDecimal.valueOf(2);
         BigDecimal price = BigDecimal.valueOf(100);
         BigDecimal existingQuantity = BigDecimal.valueOf(5);
+        BigDecimal existingCost = BigDecimal.valueOf(500);
         mockCryptoServiceResponse(price);
-        Asset existingAsset = createExistingAsset(userId, cryptoId, existingQuantity);
+        Asset existingAsset = createExistingAsset(userId, cryptoId, existingQuantity, existingCost);
 
         /**
          * Обновление баланса пользователя
@@ -155,9 +157,10 @@ public class AssetServiceImplTest {
         BigDecimal quantityToSell = BigDecimal.valueOf(10);
         BigDecimal price = BigDecimal.valueOf(100);
         BigDecimal existingQuantity = BigDecimal.valueOf(5);
+        BigDecimal existingCost = BigDecimal.valueOf(500);
 
         mockCryptoServiceResponse(price);
-        createExistingAsset(userId, cryptoId, existingQuantity);
+        createExistingAsset(userId, cryptoId, existingQuantity, existingCost);
 
         /**
          * Должно произойти исключение
@@ -187,11 +190,12 @@ public class AssetServiceImplTest {
     /**
      * Вспомогательный метод для создания существующего актива.
      */
-    private Asset createExistingAsset(Long userId, Long cryptoId, BigDecimal existingQuantity) {
+    private Asset createExistingAsset(Long userId, Long cryptoId, BigDecimal existingQuantity, BigDecimal existingCost) {
         Asset existingAsset = new Asset();
         existingAsset.setUserId(userId);
         existingAsset.setCryptoId(cryptoId);
         existingAsset.setQuantity(existingQuantity);
+        existingAsset.setCost(existingCost);
         when(assetRepository.findByUserIdAndCryptoId(userId, cryptoId)).thenReturn(existingAsset);
         return existingAsset;
     }
