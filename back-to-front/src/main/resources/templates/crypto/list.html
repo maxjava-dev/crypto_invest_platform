@@ -36,26 +36,43 @@
 <div class="vh-100 d-flex">
     <div class="container mt-5">
         <div class="row justify-content-center">
-            <div class="col-md-8 overflow-auto">
+            <div class="col-md-12 overflow-auto">
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th colspan="5" class="text-center">Топ криптовалют</th>
-                    </tr>
-                    <tr>
                         <th class="text-center">№</th>
-                        <th class="text-center">Лого</th>
-                        <th class="text-center">Тикер</th>
-                        <th class="text-center">Название</th>
+                        <th class="text-left">Название</th>
+                        <th class="text-center">Стоимость</th>
+                        <th class="text-center">Час %</th>
+                        <th class="text-center">День %</th>
+                        <th class="text-center">7 дней %</th>
+                        <th class="text-center">30 дней %</th>
+                        <th class="text-center">Капитализация</th>
                         <th class="text-center">Действия</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="crypto, iterator : ${cryptos}">
                         <td class="text-center" th:text="${iterator.index + 1}"></td>
-                        <td class="text-center"><img th:src="${crypto.logo}" width="25" height="25"></td>
-                        <td class="text-center" th:text="${crypto.symbol}"></td>
-                        <td class="text-center" th:text="${crypto.name}"></td>
+                        <td class="text-left" style="width: 100px">
+                            <img th:src="${crypto.logo}" width="25" height="25">
+                            <span th:text="${crypto.name}"></span>
+                            <span style="color: gray" th:text="${crypto.symbol}"></span>
+                        </td>
+                        <td class="text-center" th:text="${crypto.getFormattedPrice()}"></td>
+                        <td class="text-center"
+                            th:classappend="${crypto.percentChange1h.signum() > 0 ? 'text-success' : 'text-danger'}"
+                            th:text="${crypto.getFormattedPercentChange1h()}"></td>
+                        <td class="text-center"
+                            th:classappend="${crypto.percentChange24h.signum() > 0 ? 'text-success' : 'text-danger'}"
+                            th:text="${crypto.getFormattedPercentChange24h()}"></td>
+                        <td class="text-center"
+                            th:classappend="${crypto.percentChange7d.signum() > 0 ? 'text-success' : 'text-danger'}"
+                            th:text="${crypto.getFormattedPercentChange7d()}"></td>
+                        <td class="text-center"
+                            th:classappend="${crypto.percentChange30d.signum() > 0 ? 'text-success' : 'text-danger'}"
+                            th:text="${crypto.getFormattedPercentChange30d()}"></td>
+                        <td class="text-center" th:text="${crypto.getFormattedMarketCap()}"></td>
                         <td class="text-center">
                             <a th:href="@{/crypto/{id}/buy(id=${crypto.id})}" class="btn btn-primary">Купить</a>
                             <a th:href="@{/crypto/{symbol}(symbol=${crypto.symbol})}" class="btn btn-primary">Детали</a>
