@@ -1,4 +1,4 @@
-package com.sbrf.student.cryptoinvest.crypto.model.data;
+package com.sbrf.student.cryptoinvest.crypto.model.data.cryptocompare;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -16,8 +16,8 @@ import java.util.List;
 public class CCHistoryResponseData {
 
     /**
-     * Список элементов истории цен
+     * Список элементов истории цен.
      */
     @JsonProperty("Data")
-    List<CCHistoryResponseDataElement> data;
+    private List<CCHistoryResponseDataElement> data;
 }

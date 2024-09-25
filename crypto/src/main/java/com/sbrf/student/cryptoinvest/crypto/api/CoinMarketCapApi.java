@@ -1,8 +1,8 @@
 package com.sbrf.student.cryptoinvest.crypto.api;
 
-import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapIdList;
-import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapMetadata;
-import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapPriceList;
+import com.sbrf.student.cryptoinvest.crypto.model.data.coinmarketcap.CoinMarketCapIdList;
+import com.sbrf.student.cryptoinvest.crypto.model.data.coinmarketcap.CoinMarketCapMetadata;
+import com.sbrf.student.cryptoinvest.crypto.model.data.coinmarketcap.CoinMarketCapPriceList;
 
 import java.util.List;
 
@@ -13,23 +13,22 @@ public interface CoinMarketCapApi {
 
     /**
      *
-     * @param ids список id криптовалют
-     * @return метаданные о криптовалютах
+     * @param ids Список id криптовалют.
+     * @return Метаданные о криптовалютах.
      */
     CoinMarketCapMetadata getMetadata(List<Long> ids);
 
     /**
      *
-     * @param topN количество криптовалют, id которых нужно получить
-     * @return список id
+     * @param topN Количество криптовалют, id которых нужно получить.
+     * @return Список id.
      */
     CoinMarketCapIdList getIdList(int topN);
 
     /**
      *
-     * @param ids список id криптовалют
-     * @return данные о ценах
+     * @param ids Список id криптовалют.
+     * @return Данные о ценах.
      */
     CoinMarketCapPriceList getPriceList(List<Long> ids);
-
 }

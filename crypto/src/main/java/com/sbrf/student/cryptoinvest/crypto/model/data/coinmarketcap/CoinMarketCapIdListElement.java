@@ -1,11 +1,11 @@
-package com.sbrf.student.cryptoinvest.crypto.model.data;
+package com.sbrf.student.cryptoinvest.crypto.model.data.coinmarketcap;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * ID криптовалюты из CoinMarketCap
+ * ID криптовалюты из CoinMarketCap.
  */
 
 @Data
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CoinMarketCapIdListElement {
     /**
-     * Идентификатор криптовалюты
+     * Идентификатор криптовалюты.
      */
-    Long id;
+    private Long id;
 }
