@@ -1,4 +1,4 @@
-package com.sbrf.student.cryptoinvest.crypto.model.data;
+package com.sbrf.student.cryptoinvest.crypto.model.data.cryptocompare;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -14,14 +14,14 @@ import lombok.NoArgsConstructor;
 public class CCHistoryResponseDataElement {
 
     /**
-     * Время в секундах
+     * Время в секундах.
      */
     @JsonProperty("time")
-    long time;
+    private long time;
 
     /**
-     * Цена на начало периода (часа)
+     * Цена на начало периода (часа).
      */
     @JsonProperty("open")
-    double open;
+    private double open;
 }

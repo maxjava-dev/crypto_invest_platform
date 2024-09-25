@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.math.BigDecimal;
 
 /**
- * Модель криптовалюты с метаданными и ценой
+ * Модель криптовалюты с метаданными и ценой.
  */
 @Data
 @RequiredArgsConstructor

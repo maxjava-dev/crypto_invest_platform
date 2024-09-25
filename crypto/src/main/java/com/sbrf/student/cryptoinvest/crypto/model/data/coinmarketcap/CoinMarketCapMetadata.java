@@ -1,4 +1,4 @@
-package com.sbrf.student.cryptoinvest.crypto.model.data;
+package com.sbrf.student.cryptoinvest.crypto.model.data.coinmarketcap;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class CoinMarketCapMetadata {
 
     /**
-     * Соответствие: ИД криптовалюты - метаданные
+     * Соответствие: ИД криптовалюты - метаданные.
      */
-    Map<String, CoinMarketCapMetadataElement> data;
+    private Map<String, CoinMarketCapMetadataElement> data;
 }

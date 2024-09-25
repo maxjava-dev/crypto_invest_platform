@@ -39,17 +39,17 @@ public class CryptoCurrencyEntity {
      * Название.
      */
     @Column
-    String name;
+    private String name;
 
     /**
      * Описание.
      */
     @Column(length = 4096)
-    String description;
+    private String description;
 
     /**
      * Url на картинку.
      */
     @Column
-    String logo;
+    private String logo;
 }

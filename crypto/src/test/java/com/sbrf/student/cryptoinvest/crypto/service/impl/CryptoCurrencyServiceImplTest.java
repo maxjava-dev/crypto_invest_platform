@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Интеграционный тест на {@link CryptoCurrencyServiceImpl}.
@@ -37,16 +36,43 @@ class CryptoCurrencyServiceImplTest {
     }
 
     @Test
-    void getCryptoCurrency() {
+    void getCryptoCurrencyByIdSuccess() {
 
-        var element = service.getCryptoCurrency(1L);
+        var element = service.getCryptoCurrency(1L).get();
 
-        assertNotNull(element);
         assertNotNull(element.getPrice());
         assertNotNull(element.getName());
         assertNotNull(element.getSymbol());
         assertNotNull(element.getDescription());
         assertNotNull(element.getId());
+    }
+
+    @Test
+    void getCryptoCurrencyByIdNotFound() {
+
+        var element = service.getCryptoCurrency(100000000L);
+
+        assertTrue(element.isEmpty());
+    }
+
+    @Test
+    void getCryptoCurrencyBySymbolSuccess() {
+
+        var element = service.getCryptoCurrencyBySymbol("BTC").get();
+
+        assertNotNull(element.getPrice());
+        assertNotNull(element.getName());
+        assertNotNull(element.getSymbol());
+        assertNotNull(element.getDescription());
+        assertNotNull(element.getId());
+    }
+
+    @Test
+    void getCryptoCurrencyBySymbolNotFound() {
+
+        var element = service.getCryptoCurrencyBySymbol("NOT_EXISTING");
+
+        assertTrue(element.isEmpty());
     }
 
     @Test

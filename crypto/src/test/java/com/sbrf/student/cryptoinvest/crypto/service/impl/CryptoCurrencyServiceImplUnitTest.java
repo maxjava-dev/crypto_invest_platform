@@ -2,7 +2,7 @@ package com.sbrf.student.cryptoinvest.crypto.service.impl;
 
 import com.sbrf.student.cryptoinvest.crypto.api.CoinMarketCapApi;
 import com.sbrf.student.cryptoinvest.crypto.api.CryptoCompareApi;
-import com.sbrf.student.cryptoinvest.crypto.model.data.*;
+import com.sbrf.student.cryptoinvest.crypto.model.data.coinmarketcap.*;
 import com.sbrf.student.cryptoinvest.crypto.model.entity.CryptoCurrencyEntity;
 import com.sbrf.student.cryptoinvest.crypto.repository.CryptoCurrencyRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -123,10 +122,19 @@ class CryptoCurrencyServiceImplUnitTest {
         var entity = new CryptoCurrencyEntity(1000L, 1L, "BTC", "Bitcoin", "desc1", "pic1");
 
         when(repository.findAll()).thenReturn(List.of(entity));
+        when(coinMarketCapApi.getPriceList(any())).thenReturn(
+                new CoinMarketCapPriceList(
+                        Map.of(
+                                "1", new CoinMarketCapPriceElement(1L, Map.of("USD",
+                                        new CoinMarketCapPriceQuote(BigDecimal.TEN, null, null, null, null, null)))
+                        )
+                )
+        );
 
-        var result = underTest.getCryptoCurrency(1000L);
+        var resultOptional = underTest.getCryptoCurrency(1000L);
 
-        assertNotNull(result);
+        assertTrue(resultOptional.isPresent());
+        var result = resultOptional.get();
 
         assertEquals("BTC", result.getSymbol());
         assertEquals("Bitcoin", result.getName());

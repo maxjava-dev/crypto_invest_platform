@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 /**
- * Модель элемента истории цен
+ * Модель элемента истории цен.
  */
 @Data
 @AllArgsConstructor
@@ -15,12 +15,12 @@ import java.math.BigDecimal;
 public class HistoryItem {
 
     /**
-     * Время в секундах
+     * Время в секундах.
      */
     private long time;
 
     /**
-     * Цена
+     * Цена.
      */
     private BigDecimal price;
 
