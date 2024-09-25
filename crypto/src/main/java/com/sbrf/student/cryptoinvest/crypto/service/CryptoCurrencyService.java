@@ -4,6 +4,7 @@ import com.sbrf.student.cryptoinvest.crypto.model.CryptoCurrency;
 import com.sbrf.student.cryptoinvest.crypto.model.HistoryItem;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Сервис получения данных о криптовалютах.
@@ -19,17 +20,17 @@ public interface CryptoCurrencyService {
      * @param cryptoId ID криптовалюты
      * @return модель криптовалюты
      */
-    CryptoCurrency getCryptoCurrency(Long cryptoId);
+    Optional<CryptoCurrency> getCryptoCurrency(Long cryptoId);
 
     /**
      * @param symbol символ криптовалюты
      * @return модель криптовалюты
      */
-    CryptoCurrency getCryptoCurrencyBySymbol(String symbol);
+    Optional<CryptoCurrency> getCryptoCurrencyBySymbol(String symbol);
 
     /**
      * @param symbol символ криптовалюты
-     * @return список цен за 100 часов
+     * @return список исторических цен
      */
     List<HistoryItem> getHistoryData(String symbol);
 }

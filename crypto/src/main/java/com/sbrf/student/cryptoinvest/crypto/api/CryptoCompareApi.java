@@ -1,18 +1,17 @@
 package com.sbrf.student.cryptoinvest.crypto.api;
 
-import com.sbrf.student.cryptoinvest.crypto.model.data.CCHistoryResponse;
+import com.sbrf.student.cryptoinvest.crypto.model.data.cryptocompare.CCHistoryResponse;
 
 /**
- * Апи для получения исторических данных о ценах
+ * Апи для получения исторических данных о ценах из CryptoCompare.
  */
 public interface CryptoCompareApi {
 
     /**
      *
-     * @param symbol символ криптовалюты
-     * @param toTimeStamp до какого времени получать данные
-     * @return данные о ценах
+     * @param symbol Символ криптовалюты.
+     * @param toTimeStamp До какого времени получать данные.
+     * @return Данные о ценах.
      */
     CCHistoryResponse getHourlyHistoryData(String symbol, Long toTimeStamp);
-
 }

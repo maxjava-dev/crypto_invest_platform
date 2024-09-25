@@ -1,5 +1,6 @@
 package com.sbrf.student.cryptoinvest.crypto.api;
 
+import com.sbrf.student.cryptoinvest.crypto.api.impl.CoinMarketCapApiImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +25,11 @@ class CoinMarketCapApiImplTest {
         var result = underTest.getMetadata(List.of(1L));
 
         assertNotNull(result);
-        assertEquals("BTC", result.getData().get("1").getSymbol());
+        var first = result.getData().get("1");
+        assertEquals("BTC", first.getSymbol());
+        assertNotNull(first.getDescription());
+        assertNotNull(first.getLogo());
+        assertNotNull(first.getName());
     }
 
     @Test
@@ -40,10 +45,15 @@ class CoinMarketCapApiImplTest {
     void getPriceList() {
 
         var result = underTest.getPriceList(List.of(1L));
-        var priceOfBtc = result.getData().get("1").getQuote().get("USD").getPrice();
+        var priceOfBtc = result.getData().get("1").getQuote().get("USD");
 
         assertNotNull(result);
         assertNotNull(priceOfBtc);
-        assertNotEquals(BigDecimal.ZERO, priceOfBtc);
+        assertNotEquals(BigDecimal.ZERO, priceOfBtc.getPrice());
+        assertNotNull(priceOfBtc.getMarketCap());
+        assertNotNull(priceOfBtc.getPercentChange1h());
+        assertNotNull(priceOfBtc.getPercentChange7d());
+        assertNotNull(priceOfBtc.getPercentChange24h());
+        assertNotNull(priceOfBtc.getPercentChange30d());
     }
 }

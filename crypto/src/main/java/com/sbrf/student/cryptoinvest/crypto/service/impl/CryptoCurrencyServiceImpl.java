@@ -4,10 +4,10 @@ import com.sbrf.student.cryptoinvest.crypto.api.CoinMarketCapApi;
 import com.sbrf.student.cryptoinvest.crypto.api.CryptoCompareApi;
 import com.sbrf.student.cryptoinvest.crypto.model.CryptoCurrency;
 import com.sbrf.student.cryptoinvest.crypto.model.HistoryItem;
-import com.sbrf.student.cryptoinvest.crypto.model.data.CCHistoryResponse;
-import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapIdListElement;
-import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapPriceElement;
-import com.sbrf.student.cryptoinvest.crypto.model.data.CoinMarketCapPriceQuote;
+import com.sbrf.student.cryptoinvest.crypto.model.data.coinmarketcap.CoinMarketCapIdListElement;
+import com.sbrf.student.cryptoinvest.crypto.model.data.coinmarketcap.CoinMarketCapPriceElement;
+import com.sbrf.student.cryptoinvest.crypto.model.data.coinmarketcap.CoinMarketCapPriceQuote;
+import com.sbrf.student.cryptoinvest.crypto.model.data.cryptocompare.CCHistoryResponse;
 import com.sbrf.student.cryptoinvest.crypto.model.entity.CryptoCurrencyEntity;
 import com.sbrf.student.cryptoinvest.crypto.repository.CryptoCurrencyRepository;
 import com.sbrf.student.cryptoinvest.crypto.service.CryptoCurrencyService;
@@ -60,44 +60,56 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
     }
 
     @Override
-    public CryptoCurrency getCryptoCurrency(Long cryptoId) {
+    public Optional<CryptoCurrency> getCryptoCurrency(Long cryptoId) {
         log.info("getCryptoCurrency called");
 
         updateMetadataIfNeeded();
 
         var entity = metadataCache.get(cryptoId);
-        return getCryptoCurrencyByEntity(entity);
+        if (entity != null) {
+            return Optional.of(getCryptoCurrencyByEntity(entity));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public CryptoCurrency getCryptoCurrencyBySymbol(String symbol) {
+    public Optional<CryptoCurrency> getCryptoCurrencyBySymbol(String symbol) {
         log.info("getCryptoCurrencyBySymbol called");
 
         updateMetadataIfNeeded();
 
         var entity = metadataCacheBySymbol.get(symbol);
-        return getCryptoCurrencyByEntity(entity);
+        if (entity != null) {
+            return Optional.of(getCryptoCurrencyByEntity(entity));
+        } else {
+            return Optional.empty();
+        }
     }
 
     private CryptoCurrency getCryptoCurrencyByEntity(CryptoCurrencyEntity entity) {
-        var priceList = coinMarketCapApi.getPriceList(List.of(entity.getExternalId()));
-        var priceElement = priceList
-                .getData()
-                .values()
-                .stream()
-                .findFirst()
-                .get();
+        try {
+            var priceList = coinMarketCapApi.getPriceList(List.of(entity.getExternalId()));
+            var priceElement = priceList
+                    .getData()
+                    .values()
+                    .stream()
+                    .findFirst()
+                    .get();
 
-        CryptoCurrency result = new CryptoCurrency(entity.getId(), entity.getSymbol(), entity.getName(), entity.getDescription(),
-                entity.getLogo());
-        fillPriceData(result, priceElement);
-        return result;
+            CryptoCurrency result = new CryptoCurrency(entity.getId(), entity.getSymbol(), entity.getName(), entity.getDescription(),
+                    entity.getLogo());
+            fillPriceData(result, priceElement);
+            return result;
+        } catch (Throwable e) {
+            log.error("getCryptoCurrencyByEntity error", e);
+            throw e;
+        }
     }
 
     @Override
     public List<HistoryItem> getHistoryData(String symbol) {
         log.info("getHistoryData called");
-
 
         var toTimeStamp = new Date().getTime();
         var resultList = new ArrayList<List<HistoryItem>>();
