@@ -1,4 +1,22 @@
 services:
+  dbcrypto:
+    image: postgres:16.4-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: CryptoDb
+  dbusers:
+    image: postgres:16.4-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: UsersDb
+  dbassets:
+    image: postgres:16.4-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: AssetsDB
   crypto:
     container_name: crypto
     build:
@@ -8,6 +26,9 @@ services:
     environment:
       COIN_MARKET_CAP_API_KEY: 14d723cf-09a1-42e5-8fa5-1a8e38dc296b
       CC_API_KEY: ba752178db9de6faaad643a0655109886b60da6d91364abbf282ed0325a995ff
+      SPRING_DATASOURCE_URL: jdbc:postgresql://dbcrypto:5432/CryptoDb
+    depends_on:
+      - dbcrypto
 
   users:
     container_name: users
@@ -15,6 +36,10 @@ services:
       context: ./users
       dockerfile: ./Dockerfile
     image: my_users:latest
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://dbusers:5432/UsersDb
+    depends_on:
+      - dbusers
 
   asset:
     container_name: asset
@@ -25,9 +50,11 @@ services:
     depends_on:
       - crypto
       - users
+      - dbassets
     environment:
       USERS_URL: http://users:8081
       CRYPTO_URL: http://crypto:8083
+      SPRING_DATASOURCE_URL: jdbc:postgresql://dbassets:5432/AssetsDB
 
   back-to-front:
     container_name: back-to-front
