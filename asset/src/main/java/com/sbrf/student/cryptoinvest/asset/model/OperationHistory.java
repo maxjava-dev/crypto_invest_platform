@@ -26,7 +26,7 @@ public class OperationHistory {
      */
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "assetId", nullable = false)
+    @JoinColumn(name = "asset_id", nullable = false)
     private Asset asset;
 
     /**

@@ -1,7 +1,6 @@
-package com.sbrf.student.cryptoinvest.asset.api.cryptocurrencyservice;
+package com.sbrf.student.cryptoinvest.asset.dto.api.cryptocurrencyservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sbrf.student.cryptoinvest.asset.dto.api.cryptocurrencyservice.CryptoServiceResponse;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -17,7 +16,7 @@ public class CryptoServiceResponseTest {
 
     /**
      * Проверка, что класс {@link CryptoServiceResponse} корректно десериализует JSON-ответ с дополнительными полями.
-     * @throws Exception
+     * @throws Exception ошибка при десериализации
      */
     @Test
     public void testDeserializationWithAdditionalProperties() throws Exception {
@@ -58,7 +57,7 @@ public class CryptoServiceResponseTest {
 
     /**
      * Проверка, что класс {@link CryptoServiceResponse} корректно сериализует объект с дополнительными полями в JSON.
-     * @throws Exception
+     * @throws Exception ошибка при десериализации
      */
     @Test
     public void testSerializationWithAdditionalProperties() throws Exception {

@@ -4,6 +4,9 @@ import com.sbrf.student.cryptoinvest.asset.model.OperationHistory;
 
 import java.util.List;
 
+/**
+ * Сервис для работы с историей операций пользователя
+ */
 public interface OperationHistoryService {
 
     /**
