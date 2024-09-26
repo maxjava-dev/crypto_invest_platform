@@ -3,8 +3,6 @@
 //import com.sbrf.student.cryptoinvest.asset.model.Asset;
 //import com.sbrf.student.cryptoinvest.asset.model.OperationHistory;
 //import com.sbrf.student.cryptoinvest.asset.model.OperationType;
-//import com.sbrf.student.cryptoinvest.asset.repository.AssetRepository;
-//import com.sbrf.student.cryptoinvest.asset.repository.OperationHistoryRepository;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,6 @@
 ///**
 // * Тестирование {@link OperationHistoryRepository}
 // */
-//// TODO: В следующем комите доделаю
 //@DataJpaTest
 //public class OperationHistoryRepositoryTest {
 //
@@ -32,77 +29,176 @@
 //    private Asset asset;
 //    private OperationHistory operation1;
 //    private OperationHistory operation2;
+//    private OperationHistory operation3;
 //
 //    /**
-//     * Очистка бд и инициализация ее тестовыми данными
+//     * Очистка бд и создание тестовых данных
 //     */
 //    @BeforeEach
 //    public void setUp() {
-//        operationHistoryRepository.deleteAll();
+//        // Удаляем старые данные
 //        assetRepository.deleteAll();
+//        operationHistoryRepository.deleteAll();
 //
+//        // Создание актива
 //        asset = new Asset();
 //        asset.setUserId(1L);
 //        asset.setCryptoId(100L);
 //        asset.setQuantity(BigDecimal.valueOf(10.5));
-//        assetRepository.save(asset);
+//        asset.setCost(BigDecimal.valueOf(105));
+//        asset = assetRepository.save(asset);
 //
+//        // Создание истории операций
 //        operation1 = new OperationHistory();
 //        operation1.setAsset(asset);
+//        operation1.setCryptoId(asset.getCryptoId());
 //        operation1.setOperationType(OperationType.buy);
-//        operation1.setSumOperation(BigDecimal.valueOf(100));
+//        operation1.setSumOperation(BigDecimal.valueOf(1050));
+//        operation1.setQuantityCurrentOperation(BigDecimal.valueOf(10));
+//        operation1.setIncomeCurrentOperation(BigDecimal.ZERO);
 //        operation1.setPurchaseDate(LocalDateTime.now());
-//        operation1.setQuantity(BigDecimal.valueOf(10.0));
 //        operationHistoryRepository.save(operation1);
 //
+//        // Добавляем еще одну операцию
 //        operation2 = new OperationHistory();
 //        operation2.setAsset(asset);
+//        operation2.setCryptoId(asset.getCryptoId());
 //        operation2.setOperationType(OperationType.sell);
-//        operation2.setSumOperation(BigDecimal.valueOf(50));
-//        operation2.setPurchaseDate(LocalDateTime.now());
-//        operation2.setQuantity(BigDecimal.valueOf(5.0));
+//        operation2.setSumOperation(BigDecimal.valueOf(500));
+//        operation2.setQuantityCurrentOperation(BigDecimal.valueOf(5));
+//        operation2.setIncomeCurrentOperation(BigDecimal.valueOf(50));
+//        operation2.setPurchaseDate(LocalDateTime.now().minusDays(1)); // более ранняя дата
+//        operation2.setQuantity(BigDecimal.valueOf(5)); // Set the quantity here
 //        operationHistoryRepository.save(operation2);
+//
+//        // Добавляем еще одну операцию
+//        operation3 = new OperationHistory();
+//        operation3.setAsset(asset);
+//        operation3.setCryptoId(asset.getCryptoId());
+//        operation3.setOperationType(OperationType.buy);
+//        operation3.setSumOperation(BigDecimal.valueOf(1000));
+//        operation3.setQuantityCurrentOperation(BigDecimal.valueOf(1));
+//        operation3.setIncomeCurrentOperation(BigDecimal.ZERO);
+//        operation3.setPurchaseDate(LocalDateTime.now().minusDays(2)); // более ранняя дата
+//        operation3.setQuantity(BigDecimal.valueOf(1)); // Set the quantity here
+//        operationHistoryRepository.save(operation3);
 //    }
 //
 //    /**
-//     * Проверка метода {@link OperationHistoryRepository#findByAsset_AssetId})
-//     * Получение списка операций с существующим активом
+//     * Тестирование метода {@link OperationHistoryRepository#findByAsset_UserIdOrderByPurchaseDateDesc(Long)}.
+//     * Проверка нахождения операций пользователя по всем активам
 //     */
 //    @Test
-//    public void testFindByAsset_AssetId() {
-//        /**
-//         * Получение списка операций с существующим активом
-//         */
-//        List<OperationHistory> operations = operationHistoryRepository.findByAsset_AssetId(asset.getAssetId());
+//    public void testFindByAsset_UserIdOrderByPurchaseDateDesc() {
+//        List<OperationHistory> operations = operationHistoryRepository.findByAsset_UserIdOrderByPurchaseDateDesc(1L);
 //
-//        /**
-//         * Проверка что список содержит 2 операции(согласно инициализации бд {@link #setUp})
-//         */
+//        assertThat(operations).hasSize(3);
+//        assertThat(operations).containsExactly(operation1, operation2, operation3);
+//    }
+//
+//    /**
+//     * Тестирование метода {@link OperationHistoryRepository#findByAsset_UserIdAndAsset_CryptoIdOrderByPurchaseDateDesc(Long, Long)}.
+//     * Проверка нахождения операций пользователя по конкретной криптовалюте
+//     */
+//    @Test
+//    public void testFindByAsset_UserIdAndAsset_CryptoIdOrderByPurchaseDateDesc() {
+//        List<OperationHistory> operations = operationHistoryRepository.findByAsset_UserIdAndAsset_CryptoIdOrderByPurchaseDateDesc(1L, 100L);
+//
 //        assertThat(operations).hasSize(2);
-//
-//        /**
-//         * Проверяет, что возвращаемый список содержит только operation1 и operation2, без учета порядка.
-//         *
-//         * Данные согласно инициализации бд {@link #setUp}
-//         */
-//        assertThat(operations).containsExactlyInAnyOrder(operation1, operation2);
+//        assertThat(operations).containsExactly(operation1, operation2);
 //    }
 //
 //    /**
-//     * Проверка метода {@link OperationHistoryRepository#findByAsset_AssetId})
-//     *
-//     * Получение списка операций по несуществующему активу
+//     * Тестирование метода {@link OperationHistoryRepository#findByAsset_UserIdAndAsset_CryptoIdOrderByPurchaseDateDesc(Long, Long)}.
+//     * Проверка нахождения операций по несуществующей криптовалюте
 //     */
 //    @Test
-//    public void testFindByAssetId_NoResults() {
-//        /**
-//         * Получение списка операций в которых участвует не существующий актив
-//         */
-//        List<OperationHistory> operations = operationHistoryRepository.findByAsset_AssetId(999L);
+//    public void testFindByAsset_UserIdAndAsset_CryptoId_NoResults() {
+//        List<OperationHistory> operations = operationHistoryRepository.findByAsset_UserIdAndAsset_CryptoIdOrderByPurchaseDateDesc(1L, 999L);
 //
-//        /**
-//         * Проверяет, что возвращаемый список операций пуст
-//         */
 //        assertThat(operations).isEmpty();
 //    }
+//
+////    @Autowired
+////    private OperationHistoryRepository operationHistoryRepository;
+////
+////    @Autowired
+////    private AssetRepository assetRepository;
+////
+////    private Asset asset;
+////    private OperationHistory operation1;
+////    private OperationHistory operation2;
+////
+////    /**
+////     * Очистка бд и инициализация ее тестовыми данными
+////     */
+////    @BeforeEach
+////    public void setUp() {
+////        operationHistoryRepository.deleteAll();
+////        assetRepository.deleteAll();
+////
+////        asset = new Asset();
+////        asset.setUserId(1L);
+////        asset.setCryptoId(100L);
+////        asset.setQuantity(BigDecimal.valueOf(10.5));
+////        assetRepository.save(asset);
+////
+////        operation1 = new OperationHistory();
+////        operation1.setAsset(asset);
+////        operation1.setOperationType(OperationType.buy);
+////        operation1.setSumOperation(BigDecimal.valueOf(100));
+////        operation1.setPurchaseDate(LocalDateTime.now());
+////        operation1.setQuantity(BigDecimal.valueOf(10.0));
+////        operationHistoryRepository.save(operation1);
+////
+////        operation2 = new OperationHistory();
+////        operation2.setAsset(asset);
+////        operation2.setOperationType(OperationType.sell);
+////        operation2.setSumOperation(BigDecimal.valueOf(50));
+////        operation2.setPurchaseDate(LocalDateTime.now());
+////        operation2.setQuantity(BigDecimal.valueOf(5.0));
+////        operationHistoryRepository.save(operation2);
+////    }
+////
+////    /**
+////     * Проверка метода {@link OperationHistoryRepository#findByAsset_AssetId})
+////     * Получение списка операций с существующим активом
+////     */
+////    @Test
+////    public void testFindByAsset_AssetId() {
+////        /**
+////         * Получение списка операций с существующим активом
+////         */
+////        List<OperationHistory> operations = operationHistoryRepository.findByAsset_AssetId(asset.getAssetId());
+////
+////        /**
+////         * Проверка что список содержит 2 операции(согласно инициализации бд {@link #setUp})
+////         */
+////        assertThat(operations).hasSize(2);
+////
+////        /**
+////         * Проверяет, что возвращаемый список содержит только operation1 и operation2, без учета порядка.
+////         *
+////         * Данные согласно инициализации бд {@link #setUp}
+////         */
+////        assertThat(operations).containsExactlyInAnyOrder(operation1, operation2);
+////    }
+////
+////    /**
+////     * Проверка метода {@link OperationHistoryRepository#findByAsset_AssetId})
+////     *
+////     * Получение списка операций по несуществующему активу
+////     */
+////    @Test
+////    public void testFindByAssetId_NoResults() {
+////        /**
+////         * Получение списка операций в которых участвует не существующий актив
+////         */
+////        List<OperationHistory> operations = operationHistoryRepository.findByAsset_AssetId(999L);
+////
+////        /**
+////         * Проверяет, что возвращаемый список операций пуст
+////         */
+////        assertThat(operations).isEmpty();
+////    }
 //}

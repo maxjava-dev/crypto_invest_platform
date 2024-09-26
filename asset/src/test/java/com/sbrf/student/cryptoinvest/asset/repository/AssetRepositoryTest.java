@@ -1,7 +1,6 @@
 package com.sbrf.student.cryptoinvest.asset.repository;
 
 import com.sbrf.student.cryptoinvest.asset.model.Asset;
-import com.sbrf.student.cryptoinvest.asset.repository.AssetRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ public class AssetRepositoryTest {
      * Проверка нахождения активов у существующего пользователя
      */
     @Test
-    public void testFindByUserId() {
+    public void testFindOwnedAssetsByUserId() {
         /**
          * Находит активы с указанным id пользователя
          */
@@ -72,7 +71,7 @@ public class AssetRepositoryTest {
      * Проверка нахождения активов в случае обращения к несуществующему пользователю
      */
     @Test
-    public void testFindByUserId_NoResults() {
+    public void testFindOwnedAssetsByUserId_NoResults() {
         /**
          * Поиск активов у несуществующего пользователю
          *
@@ -83,5 +82,40 @@ public class AssetRepositoryTest {
          * Проверяет, что возвращаемый список активов пуст
          */
         assertThat(assets).isEmpty();
+    }
+
+    /**
+     * Тестирование метода {@link AssetRepository#findByUserIdAndCryptoId(Long, Long)}.
+     * Проверка нахождения конкретного актива пользователя
+     */
+    @Test
+    public void testFindByUserIdAndCryptoId_ReturnsCorrectAsset() {
+        /**
+         * Поиск конкретного актива по userId и cryptoId
+         */
+        Asset foundAsset = assetRepository.findByUserIdAndCryptoId(1L, 100L);
+
+        /**
+         * Проверка, что найденный актив не null и совпадает с ожидаемым активом
+         */
+        assertThat(foundAsset).isNotNull();
+        assertThat(foundAsset).isEqualTo(asset1);
+    }
+
+    /**
+     * Тестирование метода {@link AssetRepository#findByUserIdAndCryptoId(Long, Long)}.
+     * Проверка случая, когда актив не найден
+     */
+    @Test
+    public void testFindByUserIdAndCryptoId_NoResult() {
+        /**
+         * Поиск актива у пользователя, для которого нет данных
+         */
+        Asset foundAsset = assetRepository.findByUserIdAndCryptoId(1L, 999L);
+
+        /**
+         * Проверка, что актив не найден
+         */
+        assertThat(foundAsset).isNull();
     }
 }
