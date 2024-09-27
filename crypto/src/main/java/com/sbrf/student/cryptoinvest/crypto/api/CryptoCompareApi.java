@@ -10,8 +10,9 @@ public interface CryptoCompareApi {
     /**
      *
      * @param symbol Символ криптовалюты.
+     * @param count Количество элементов данных.
      * @param toTimeStamp До какого времени получать данные.
      * @return Данные о ценах.
      */
-    CCHistoryResponse getHourlyHistoryData(String symbol, Long toTimeStamp);
+    CCHistoryResponse getHourlyHistoryData(String symbol, Long count, Long toTimeStamp);
 }
