@@ -1,5 +1,6 @@
 package com.sbrf.student.cryptoinvest.backtofront.api;
 
+import com.sbrf.student.cryptoinvest.backtofront.models.OperationStatus;
 import com.sbrf.student.cryptoinvest.backtofront.models.asset.Asset;
 import com.sbrf.student.cryptoinvest.backtofront.models.asset.OperationHistoryItem;
 import com.sbrf.student.cryptoinvest.backtofront.utils.RestTemplateClass;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -66,9 +68,10 @@ public class AssetApi {
      * @param cryptoId ID криптовалюты
      * @param userId ID клиента
      * @param quantity Количество криптовалюты на покупку
+     * @return статус операции
      */
-    public void performBuyCrypto(String cryptoId, String userId, String quantity) {
-        performCryptoOperation("buy", cryptoId, userId, quantity);
+    public OperationStatus performBuyCrypto(String cryptoId, String userId, String quantity) {
+        return performCryptoOperation("buy", cryptoId, userId, quantity);
     }
 
     /**
@@ -76,9 +79,10 @@ public class AssetApi {
      * @param cryptoId ID криптовалюты
      * @param userId ID клиента
      * @param quantity Количество криптовалюты на продажу
+     * @return статус операции
      */
-    public void performSellCrypto(String cryptoId, String userId, String quantity) {
-        performCryptoOperation("sell", cryptoId, userId, quantity);
+    public OperationStatus performSellCrypto(String cryptoId, String userId, String quantity) {
+        return performCryptoOperation("sell", cryptoId, userId, quantity);
     }
 
     /**
@@ -102,21 +106,27 @@ public class AssetApi {
         }
     }
 
-    private void performCryptoOperation(String operationType, String cryptoId, String userId, String quantity) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+    private OperationStatus performCryptoOperation(String operationType, String cryptoId, String userId, String quantity) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<String> request = new HttpEntity<>("", headers);
+            HttpEntity<String> request = new HttpEntity<>("", headers);
 
-        restTemplate.exchange(
-                BASE_ASSETS_URL + "/assets/{operationType}?cryptoid={cryptoid}&userid={userid}&quantity={quantity}",
-            HttpMethod.POST,
-            request,
-            Void.class,
-            operationType,
-            cryptoId,
-            userId,
-            quantity
-        );
+            restTemplate.exchange(
+                    BASE_ASSETS_URL + "/assets/{operationType}?cryptoid={cryptoid}&userid={userid}&quantity={quantity}",
+                    HttpMethod.POST,
+                    request,
+                    Void.class,
+                    operationType,
+                    cryptoId,
+                    userId,
+                    quantity
+            );
+
+            return OperationStatus.SUCCESS;
+        } catch (RestClientException e) {
+            return OperationStatus.ERROR;
+        }
     }
 }

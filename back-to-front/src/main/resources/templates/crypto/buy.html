@@ -47,6 +47,9 @@
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">Купить</button>
                     </div>
+                    <div class="form-group" th:if="${serverError}">
+                        <p style="color:red" class="small">Недостаточно средств, пополните баланс</p>
+                    </div>
                 </form>
             </div>
         </div>
