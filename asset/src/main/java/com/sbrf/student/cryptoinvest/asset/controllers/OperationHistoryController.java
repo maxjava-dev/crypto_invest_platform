@@ -2,8 +2,8 @@ package com.sbrf.student.cryptoinvest.asset.controllers;
 
 import com.sbrf.student.cryptoinvest.asset.model.OperationHistory;
 import com.sbrf.student.cryptoinvest.asset.service.OperationHistoryService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -13,10 +13,11 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/operations")
+@RequiredArgsConstructor
 @Slf4j
 public class OperationHistoryController {
-    @Autowired
-    private OperationHistoryService operationHistoryService;
+
+    private final OperationHistoryService operationHistoryService;
 
     /**
      * Получить весь список операций пользователя по всем активам

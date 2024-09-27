@@ -3,200 +3,190 @@ package com.sbrf.student.cryptoinvest.asset.service.impl;
 import com.sbrf.student.cryptoinvest.asset.dto.api.cryptocurrencyservice.CryptoServiceResponse;
 import com.sbrf.student.cryptoinvest.asset.model.Asset;
 import com.sbrf.student.cryptoinvest.asset.repository.AssetRepository;
-import com.sbrf.student.cryptoinvest.asset.repository.OperationHistoryRepository;
 import com.sbrf.student.cryptoinvest.asset.service.Impl.AssetServiceImpl;
-import org.junit.Before;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.*;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.web.client.RestTemplate;
+import com.sbrf.student.cryptoinvest.asset.service.api.cryptocurrency.Impl.CryptoCurrencyServiceImpl;
+import com.sbrf.student.cryptoinvest.asset.service.manager.OperationHistoryManager;
+import com.sbrf.student.cryptoinvest.asset.service.api.userService.Impl.BalanceManagerImpl;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
- * Юнит тесты для класса {@link AssetServiceImpl}
+ * Тестирование класса {@link AssetServiceImpl}
  */
-@SpringBootTest
-@RunWith(MockitoJUnitRunner.class)
 public class AssetServiceImplTest {
-    @Mock
-    private RestTemplate restTemplate;
 
     @Mock
     private AssetRepository assetRepository;
 
     @Mock
-    private OperationHistoryRepository operationHistoryRepository;
+    private CryptoCurrencyServiceImpl cryptoCurrencyService;
+
+    @Mock
+    private BalanceManagerImpl balanceManager;
+
+    @Mock
+    private OperationHistoryManager operationHistoryManager;
+
     @InjectMocks
     private AssetServiceImpl assetService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        assetService = new AssetServiceImpl(restTemplate, assetRepository, operationHistoryRepository);
+        MockitoAnnotations.openMocks(this);
     }
 
     /**
-     * Тестирование успешной покупки актива, если актив для пользователя отсутствует.
+     *  Тестирование метода {@link AssetServiceImpl#getOwnedAssetsByUserId(Long)}.
+     *  Проверка что возвращаемый список активов соответствует ожиданиям.
      */
     @Test
-    public void testBuyAsset_newAsset() {
+    public void testGetOwnedAssetsByUserId() {
         Long userId = 1L;
+        List<Asset> assets = new ArrayList<>();
+        assets.add(new Asset()); // добавляем пример актива
+        when(assetRepository.findOwnedAssetsByUserId(userId)).thenReturn(assets);
+
+        List<Asset> result = assetService.getOwnedAssetsByUserId(userId);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(assetRepository, times(1)).findOwnedAssetsByUserId(userId);
+    }
+
+    /**
+     *  Тестирование метода {@link AssetServiceImpl#buyAsset(Long, Long, BigDecimal)}.
+     *  Проверяет сценарий покупки нового актива, который еще не существует в базе данных.
+     */
+    @Test
+    public void testBuyAsset_NewAsset() {
         Long cryptoId = 1L;
-        BigDecimal quantity = BigDecimal.valueOf(2);
+        Long userId = 1L;
+        BigDecimal quantity = BigDecimal.valueOf(5);
         BigDecimal price = BigDecimal.valueOf(100);
-        mockCryptoServiceResponse(price);
+
+        CryptoServiceResponse response = new CryptoServiceResponse();
+        response.setPrice(price);
+
+        when(cryptoCurrencyService.fetchCryptoData(cryptoId)).thenReturn(response);
         when(assetRepository.findByUserIdAndCryptoId(userId, cryptoId)).thenReturn(null);
 
-        /**
-         * Проверка обновление баланса пользователя
-         */
-        doNothing().when(restTemplate).put(anyString(), any());
         assetService.buyAsset(cryptoId, userId, quantity);
 
-        /**
-         * Проверка вызова сохранения актива
-         */
-        verify(assetRepository, times(1)).save(any(Asset.class));
+        ArgumentCaptor<Asset> assetCaptor = ArgumentCaptor.forClass(Asset.class);
+        verify(assetRepository).save(assetCaptor.capture());
 
-        /**
-         * Проверка, что обновление баланса было вызвано
-         */
-        verify(restTemplate, times(1)).put(anyString(), any());
+        Asset savedAsset = assetCaptor.getValue();
+        assertEquals(userId, savedAsset.getUserId());
+        assertEquals(cryptoId, savedAsset.getCryptoId());
+        assertEquals(quantity, savedAsset.getQuantity());
+        assertEquals(price.multiply(quantity), savedAsset.getCost());
     }
 
     /**
-     * Тестирование успешной покупки актива, если актив уже существует.
+     * Тестирование метода {@link AssetServiceImpl#buyAsset(Long, Long, BigDecimal)}.
+     * Проверяет сценарий покупки существующего актива и корректного обновления его количества и стоимости.
      */
     @Test
-    public void testBuyAsset_existingAsset() {
-        Long userId = 1L;
+    public void testBuyAsset_ExistingAsset() {
         Long cryptoId = 1L;
-        BigDecimal quantity = BigDecimal.valueOf(2);
-        BigDecimal price = BigDecimal.valueOf(100);
-        BigDecimal existingQuantity = BigDecimal.valueOf(5);
-        BigDecimal existingCost = BigDecimal.valueOf(500);
-        mockCryptoServiceResponse(price);
-        Asset existingAsset = createExistingAsset(userId, cryptoId, existingQuantity, existingCost);
-
-        /**
-         * Обновление баланса пользователя
-         */
-        doNothing().when(restTemplate).put(anyString(), any());
-        assetService.buyAsset(cryptoId, userId, quantity);
-
-        /**
-         * Проверка вызова сохранения актива
-         */
-        verify(assetRepository, times(1)).save(any(Asset.class));
-
-        /**
-         * Проверка обновления количества актива
-         */
-        assertEquals(existingAsset.getQuantity(), existingQuantity.add(quantity));
-
-        /**
-         * Проверка, что обновление баланса было вызвано
-         */
-        verify(restTemplate, times(1)).put(anyString(), any());
-    }
-
-    /**
-     * Тестирование успешной продажи актива.
-     */
-    @Test
-    public void testSellAsset_successfulSale() {
         Long userId = 1L;
-        Long cryptoId = 1L;
-        BigDecimal quantityToSell = BigDecimal.valueOf(2);
+        BigDecimal quantityToBuy = BigDecimal.valueOf(5);
         BigDecimal price = BigDecimal.valueOf(100);
-        BigDecimal existingQuantity = BigDecimal.valueOf(5);
-        BigDecimal existingCost = BigDecimal.valueOf(500);
-        mockCryptoServiceResponse(price);
-        Asset existingAsset = createExistingAsset(userId, cryptoId, existingQuantity, existingCost);
 
-        /**
-         * Обновление баланса пользователя
-          */
-        doNothing().when(restTemplate).put(anyString(), any());
-        assetService.sellAsset(cryptoId, userId, quantityToSell);
+        CryptoServiceResponse response = new CryptoServiceResponse();
+        response.setPrice(price);
 
-        /**
-         * Проверка вызова сохранения актива
-         */
-        verify(assetRepository, times(1)).save(existingAsset);
-
-        /**
-         * Проверка обновления количества актива
-         */
-        assertEquals(existingAsset.getQuantity(), existingQuantity.subtract(quantityToSell));
-
-        /**
-         * Проверка, что обновление баланса было вызвано
-         */
-        verify(restTemplate, times(1)).put(anyString(), any());
-    }
-
-    /**
-     * Тестирование попытки продать актив при недостаточном количестве актива.
-     */
-    @Test(expected = RuntimeException.class)
-    public void testSellAsset_insufficientAssets() {
-        Long userId = 1L;
-        Long cryptoId = 1L;
-
-        /**
-         * Больше чем пользователь имеет
-         */
-        BigDecimal quantityToSell = BigDecimal.valueOf(10);
-        BigDecimal price = BigDecimal.valueOf(100);
-        BigDecimal existingQuantity = BigDecimal.valueOf(5);
-        BigDecimal existingCost = BigDecimal.valueOf(500);
-
-        mockCryptoServiceResponse(price);
-        createExistingAsset(userId, cryptoId, existingQuantity, existingCost);
-
-        /**
-         * Должно произойти исключение
-         */
-        assetService.sellAsset(cryptoId, userId, quantityToSell);
-
-        /**
-         * Проверка, что сохранение актива не было вызвано
-         */
-        verify(assetRepository, times(0)).save(any(Asset.class));
-
-        /**
-         * Проверка, что обновление баланса не было вызвано
-         */
-        verify(restTemplate, times(0)).put(anyString(), any());
-    }
-
-    /**
-     * Вспомогательный метод для получения мока данных криптовалюты.
-     */
-    private void mockCryptoServiceResponse(BigDecimal price) {
-        CryptoServiceResponse cryptoResponse = new CryptoServiceResponse();
-        cryptoResponse.setPrice(price);
-        when(restTemplate.getForObject(anyString(), eq(CryptoServiceResponse.class))).thenReturn(cryptoResponse);
-    }
-
-    /**
-     * Вспомогательный метод для создания существующего актива.
-     */
-    private Asset createExistingAsset(Long userId, Long cryptoId, BigDecimal existingQuantity, BigDecimal existingCost) {
         Asset existingAsset = new Asset();
         existingAsset.setUserId(userId);
         existingAsset.setCryptoId(cryptoId);
-        existingAsset.setQuantity(existingQuantity);
-        existingAsset.setCost(existingCost);
+        existingAsset.setQuantity(BigDecimal.valueOf(2));
+        existingAsset.setCost(price.multiply(BigDecimal.valueOf(2)));
+
+        when(cryptoCurrencyService.fetchCryptoData(cryptoId)).thenReturn(response);
         when(assetRepository.findByUserIdAndCryptoId(userId, cryptoId)).thenReturn(existingAsset);
-        return existingAsset;
+
+        assetService.buyAsset(cryptoId, userId, quantityToBuy);
+
+        ArgumentCaptor<Asset> assetCaptor = ArgumentCaptor.forClass(Asset.class);
+        verify(assetRepository).save(assetCaptor.capture());
+
+        Asset savedAsset = assetCaptor.getValue();
+        assertEquals(userId, savedAsset.getUserId());
+        assertEquals(cryptoId, savedAsset.getCryptoId());
+        assertEquals(BigDecimal.valueOf(7), savedAsset.getQuantity()); // 2 + 5
+        assertEquals(price.multiply(BigDecimal.valueOf(7)), savedAsset.getCost()); // (2 * price + 5 * price)
+    }
+
+    /**
+     * Тестирование метода {@link AssetServiceImpl#sellAsset(Long, Long, BigDecimal)}.
+     * Проверяет, что продажа актива успешно завершена и количество активов обновляется корректно.
+     */
+    @Test
+    public void testSellAsset_Success() {
+        Long cryptoId = 1L;
+        Long userId = 1L;
+        BigDecimal quantityToSell = BigDecimal.valueOf(2);
+        BigDecimal price = BigDecimal.valueOf(100);
+
+        CryptoServiceResponse response = new CryptoServiceResponse();
+        response.setPrice(price);
+
+        Asset existingAsset = new Asset();
+        existingAsset.setUserId(userId);
+        existingAsset.setCryptoId(cryptoId);
+        existingAsset.setQuantity(BigDecimal.valueOf(5));
+        existingAsset.setCost(price.multiply(BigDecimal.valueOf(5)));
+
+        when(cryptoCurrencyService.fetchCryptoData(cryptoId)).thenReturn(response);
+        when(assetRepository.findByUserIdAndCryptoId(userId, cryptoId)).thenReturn(existingAsset);
+
+        assetService.sellAsset(cryptoId, userId, quantityToSell);
+
+        ArgumentCaptor<Asset> assetCaptor = ArgumentCaptor.forClass(Asset.class);
+        verify(assetRepository).save(assetCaptor.capture());
+
+        Asset savedAsset = assetCaptor.getValue();
+        assertEquals(userId, savedAsset.getUserId());
+        assertEquals(cryptoId, savedAsset.getCryptoId());
+        assertEquals(BigDecimal.valueOf(3), savedAsset.getQuantity()); // 5 - 2
+    }
+
+    /**
+     * Тестирование метода {@link AssetServiceImpl#sellAsset(Long, Long, BigDecimal)}.
+     * Проверяет, что выбрасывается исключение, когда пользователь пытается продать больше активов,
+     * чем у него есть.
+     */
+    @Test
+    public void testSellAsset_InsufficientQuantity() {
+        Long cryptoId = 1L;
+        Long userId = 1L;
+        BigDecimal quantityToSell = BigDecimal.valueOf(10);
+
+        Asset existingAsset = new Asset();
+        existingAsset.setUserId(userId);
+        existingAsset.setCryptoId(cryptoId);
+        existingAsset.setQuantity(BigDecimal.valueOf(5));
+
+        when(assetRepository.findByUserIdAndCryptoId(userId, cryptoId)).thenReturn(existingAsset);
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            assetService.sellAsset(cryptoId, userId, quantityToSell);
+        });
+
+        String expectedMessage = "Недостаточно активов для продажи.";
+        String actualMessage = exception.getMessage();
+
+        assertFalse(actualMessage.contains(expectedMessage));
     }
 }

@@ -73,7 +73,7 @@ GET http://localhost:8082/assets/info?userid={userID} \
 "cryptoId": 27, \
 "quantity": 3.00, \
 "cost": 453.25 \
-}; 
+} 
 
 ### Работа с историей операций пользователя:
 #### Получение списка всех транзакций конкретного пользователя
@@ -91,9 +91,9 @@ GET http://localhost:8082/operations/user/{userID} \
 "incomeCurrentOperation": 0.00, \
 "purchaseDate": "2024-09-26T03:40:28.514966", \
 "quantity": 2.50 \
-}; 
+} 
 
-#### - Получение списка всех транзакций пользователя 
+### Получение списка всех транзакций пользователя 
 GET http://localhost:8082/operations/user/{userID}/crypto/{cryptoID} \
 Описание параметров: 
 - userID — ID пользователя (целое число - Long).
@@ -108,7 +108,7 @@ GET http://localhost:8082/operations/user/{userID}/crypto/{cryptoID} \
 "incomeCurrentOperation": 0.00, \
 "purchaseDate": "2024-09-25T20:32:12.331036", \
 "quantity": 2.00 \
-}; 
+}
 
 Демонстрация работы запросов продемонстрирована в [API_Request_Example.http](API_Request_Example.http), 
 для работы необходимо чтобы работали сервисы Users и CryptoCurrency.

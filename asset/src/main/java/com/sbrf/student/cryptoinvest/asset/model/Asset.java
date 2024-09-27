@@ -12,25 +12,26 @@ import java.util.List;
  */
 @Entity
 @Data
-@Table(name = "assets", uniqueConstraints ={@UniqueConstraint(columnNames = {"userId", "cryptoId"})})
+@Table(name = "assets", uniqueConstraints ={@UniqueConstraint(columnNames = {"user_id", "crypto_id"})}) // _
 public class Asset {
     /**
      * Id приобретенного актива
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, name = "asset_id")
     private Long assetId;
 
     /**
      *  Id клиента который владеет активом(foreign key к микросервису User)
      */
-    @Column(nullable = false)
+    @Column(nullable = false, name = "user_id")
     private Long userId;
 
     /**
      * Id криптовалюты принадлежащей клиенту(foreign key к микросервису Cryptocurrency)
      */
-    @Column(nullable = false)
+    @Column(nullable = false, name = "crypto_id")
     private Long cryptoId;
 
     /**

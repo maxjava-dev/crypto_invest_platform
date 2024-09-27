@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+/**
+ * Реализация {@link OperationHistoryService}
+ */
 @Service
 @Slf4j
 public class OperationHistoryServiceImpl implements OperationHistoryService {
