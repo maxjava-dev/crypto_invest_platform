@@ -47,11 +47,24 @@ public class CryptoService {
 
     /**
      * @param symbol символ криптовалюты
+     * @return данные о криптовалюте
+     */
+    public CryptoCurrency getCryptoCurrency(String symbol) {
+        Optional<CryptoCurrency> crypto = cryptoApi.getOne(symbol);
+        if (crypto.isPresent()) {
+            return crypto.get();
+        } else {
+            throw new RuntimeException("Error getting crypto currency data");
+        }
+    }
+
+    /**
+     * @param symbol символ криптовалюты
      * @return данные для экрана "О криптовалюте"
      */
     public CryptoCurrencyInfoModel getCryptoCurrencyInfoModel(String symbol) {
         var response = cryptoApi.getHistory(symbol);
-        var crypto = cryptoApi.getOne(symbol);
+        Optional<CryptoCurrency> crypto = cryptoApi.getOne(symbol);
         if (response.isPresent() && crypto.isPresent()) {
             var historyItems = response.get();
             var chartData = historyItems
@@ -60,7 +73,7 @@ public class CryptoService {
                     .toList();
             return new CryptoCurrencyInfoModel(crypto.get(), chartData);
         } else {
-            throw new RuntimeException("Error getting crypto currency data");
+            throw new RuntimeException("Error getting crypto currency info data");
         }
     }
 }

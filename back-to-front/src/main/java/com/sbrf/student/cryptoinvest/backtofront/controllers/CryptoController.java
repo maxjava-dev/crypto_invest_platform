@@ -77,9 +77,7 @@ public class CryptoController {
                     model.addAttribute("balance", user.formattedBalance());
                     model.addAttribute("income", user.formattedIncome());
                 });
-
-        CryptoCurrencyInfoModel currencyInfoModel = cryptoService.getCryptoCurrencyInfoModel(symbol);
-        CryptoCurrency cryptoCurrency = currencyInfoModel.getCryptoCurrency();
+        CryptoCurrency cryptoCurrency = cryptoService.getCryptoCurrency(symbol);
         List<OperationHistoryItem> operationHistory = assetService.getOperationHistoryByCrypto(currentUser.getId(), cryptoCurrency);
         model.addAttribute("operationHistory", operationHistory);
         return "crypto/history";
@@ -94,8 +92,7 @@ public class CryptoController {
                     model.addAttribute("balance", user.formattedBalance());
                     model.addAttribute("income", user.formattedIncome());
                 });
-        CryptoCurrencyInfoModel currencyInfoModel = cryptoService.getCryptoCurrencyInfoModel(symbol);
-        CryptoCurrency cryptoCurrency = currencyInfoModel.getCryptoCurrency();
+        CryptoCurrency cryptoCurrency = cryptoService.getCryptoCurrency(symbol);
         model.addAttribute("crypto", cryptoCurrency);
         return "crypto/buy";
     }
@@ -107,16 +104,18 @@ public class CryptoController {
             @ModelAttribute("cryptoOperationDTO") CryptoOperationDTO cryptoOperationDTO
     ) {
         User currentUser = UserAuthentication.getCurrentUser();
-        CryptoCurrencyInfoModel currencyInfoModel = cryptoService.getCryptoCurrencyInfoModel(symbol);
-        CryptoCurrency cryptoCurrency = currencyInfoModel.getCryptoCurrency();
+        CryptoCurrency cryptoCurrency = cryptoService.getCryptoCurrency(symbol);
         String cryptoId = cryptoCurrency.getId().toString();
         OperationStatus operationStatus = assetApi.performBuyCrypto(cryptoId, currentUser.getId().toString(), cryptoOperationDTO.getQuantity());
         if (operationStatus == OperationStatus.SUCCESS) {
             return "redirect:/assets/";
         } else {
+            userApi.getUserByUsername(currentUser.getUsername())
+                .ifPresent(user -> {
+                    model.addAttribute("balance", user.formattedBalance());
+                    model.addAttribute("income", user.formattedIncome());
+                });
             model.addAttribute("serverError", true);
-            model.addAttribute("balance", currentUser.getBalance());
-            model.addAttribute("income", currentUser.getIncome());
             model.addAttribute("username", currentUser.getVisibleUserName());
             model.addAttribute("crypto", cryptoCurrency);
             return "crypto/buy";
@@ -128,12 +127,11 @@ public class CryptoController {
         User currentUser = UserAuthentication.getCurrentUser();
         model.addAttribute("username", currentUser.getVisibleUserName());
         userApi.getUserByUsername(currentUser.getUsername())
-                .ifPresent(user -> {
-                    model.addAttribute("balance", user.formattedBalance());
-                    model.addAttribute("income", user.formattedIncome());
-                });
-        CryptoCurrencyInfoModel currencyInfoModel = cryptoService.getCryptoCurrencyInfoModel(symbol);
-        CryptoCurrency cryptoCurrency = currencyInfoModel.getCryptoCurrency();
+            .ifPresent(user -> {
+                model.addAttribute("balance", user.formattedBalance());
+                model.addAttribute("income", user.formattedIncome());
+            });
+        CryptoCurrency cryptoCurrency = cryptoService.getCryptoCurrency(symbol);
         model.addAttribute("crypto", cryptoCurrency);
         return "crypto/sell";
     }
@@ -152,9 +150,12 @@ public class CryptoController {
         if (operationStatus == OperationStatus.SUCCESS) {
             return "redirect:/assets/";
         } else {
+            userApi.getUserByUsername(currentUser.getUsername())
+                .ifPresent(user -> {
+                    model.addAttribute("balance", user.formattedBalance());
+                    model.addAttribute("income", user.formattedIncome());
+                });
             model.addAttribute("serverError", true);
-            model.addAttribute("balance", currentUser.getBalance());
-            model.addAttribute("income", currentUser.getIncome());
             model.addAttribute("username", currentUser.getVisibleUserName());
             model.addAttribute("crypto", cryptoCurrency);
             return "crypto/sell";
