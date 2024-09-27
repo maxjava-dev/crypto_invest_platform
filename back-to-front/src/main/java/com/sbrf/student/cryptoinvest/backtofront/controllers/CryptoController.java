@@ -3,6 +3,7 @@ package com.sbrf.student.cryptoinvest.backtofront.controllers;
 import com.sbrf.student.cryptoinvest.backtofront.api.AssetApi;
 import com.sbrf.student.cryptoinvest.backtofront.api.UserApi;
 import com.sbrf.student.cryptoinvest.backtofront.dto.CryptoOperationDTO;
+import com.sbrf.student.cryptoinvest.backtofront.models.OperationStatus;
 import com.sbrf.student.cryptoinvest.backtofront.models.crypto.CryptoCurrency;
 import com.sbrf.student.cryptoinvest.backtofront.models.user.User;
 import com.sbrf.student.cryptoinvest.backtofront.services.CryptoService;
@@ -73,12 +74,21 @@ public class CryptoController {
 
     @PostMapping("/{id}/buy")
     public String cryptoPerformBuy(
-        @PathVariable String id,
-        @ModelAttribute("cryptoOperationDTO") CryptoOperationDTO cryptoOperationDTO
+            Model model,
+            @PathVariable String id,
+            @ModelAttribute("cryptoOperationDTO") CryptoOperationDTO cryptoOperationDTO
     ) {
         User currentUser = UserAuthentication.getCurrentUser();
-        assetApi.performBuyCrypto(id, currentUser.getId().toString(), cryptoOperationDTO.getQuantity());
-        return "redirect:/assets/";
+        OperationStatus operationStatus = assetApi.performBuyCrypto(id, currentUser.getId().toString(), cryptoOperationDTO.getQuantity());
+        if (operationStatus == OperationStatus.SUCCESS) {
+            return "redirect:/assets/";
+        } else {
+            model.addAttribute("serverError", true);
+            model.addAttribute("balance", currentUser.getBalance());
+            model.addAttribute("income", currentUser.getIncome());
+            model.addAttribute("username", currentUser.getVisibleUserName());
+            return "crypto/buy";
+        }
     }
 
     @GetMapping("/{id}/sell")
@@ -95,11 +105,20 @@ public class CryptoController {
 
     @PostMapping("/{id}/sell")
     public String cryptoPerformSell(
-        @PathVariable String id,
-        @ModelAttribute("cryptoOperationDTO") CryptoOperationDTO cryptoOperationDTO
+            Model model,
+            @PathVariable String id,
+            @ModelAttribute("cryptoOperationDTO") CryptoOperationDTO cryptoOperationDTO
     ) {
         User currentUser = UserAuthentication.getCurrentUser();
-        assetApi.performSellCrypto(id, currentUser.getId().toString(), cryptoOperationDTO.getQuantity());
-        return "redirect:/assets/";
+        OperationStatus operationStatus = assetApi.performSellCrypto(id, currentUser.getId().toString(), cryptoOperationDTO.getQuantity());
+        if (operationStatus == OperationStatus.SUCCESS) {
+            return "redirect:/assets/";
+        } else {
+            model.addAttribute("serverError", true);
+            model.addAttribute("balance", currentUser.getBalance());
+            model.addAttribute("income", currentUser.getIncome());
+            model.addAttribute("username", currentUser.getVisibleUserName());
+            return "crypto/sell";
+        }
     }
 }

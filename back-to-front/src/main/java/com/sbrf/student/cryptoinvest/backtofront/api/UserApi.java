@@ -50,10 +50,14 @@ public class UserApi {
      * @return опциональный объект клиента
      */
     public Optional<User> postUser(User user) {
-        ResponseEntity<User> response = restTemplate.postForEntity(BASE_USERS_URL + USERS_API_PATH, user, User.class);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return Optional.of(response.getBody());
-        } else {
+        try {
+            ResponseEntity<User> response = restTemplate.postForEntity(BASE_USERS_URL + USERS_API_PATH, user, User.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return Optional.of(response.getBody());
+            } else {
+                return Optional.empty();
+            }
+        } catch (Exception e) {
             return Optional.empty();
         }
     }
