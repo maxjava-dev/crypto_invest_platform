@@ -2,10 +2,10 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Топ криптовалют</title>
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <title>Список криптовалют</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/static/css/common.css">
 </head>
 <body>
 <header>
@@ -75,7 +75,7 @@
                             th:text="${crypto.getFormattedPercentChange30d()}"></td>
                         <td class="text-center" th:text="${crypto.getFormattedMarketCap()}"></td>
                         <td class="text-center">
-                            <a th:href="@{/crypto/{id}/buy(id=${crypto.id})}" class="btn btn-primary">Купить</a>
+                            <a th:href="@{/crypto/{symbol}/buy(symbol=${crypto.symbol})}" class="btn btn-primary">Купить</a>
                             <a th:href="@{/crypto/{symbol}(symbol=${crypto.symbol})}" class="btn btn-primary">Детали</a>
                         </td>
                     </tr>

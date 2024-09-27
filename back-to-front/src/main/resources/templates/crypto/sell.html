@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Продать криптовалюту</title>
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico"/>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/static/css/common.css">
 </head>
 <body>
 <header>
@@ -41,8 +41,20 @@
                 <form method="post">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <div class="form-group">
+                        <label>Название:</label>
+                        <p>
+                            <img th:src="${crypto.logo}" width="25" height="25">
+                            <span th:text="${crypto.name}"></span>
+                            <span style="color: gray" th:text="${crypto.symbol}"></span>
+                        </p>
+                    </div>
+                    <div class="form-group">
                         <label for="quantity">Количество:</label>
                         <input type="text" id="quantity" name="quantity" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Стоимость:</label>
+                        <p><span id="price">Введите количество</span></p>
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">Продать</button>
@@ -51,9 +63,11 @@
                         <p style="color:red" class="small">Недостаточно криптовалюты для продажи</p>
                     </div>
                 </form>
+                <span style="display: none" id="cryptoPrice" th:text="${crypto.price}"></span>
             </div>
         </div>
     </div>
 </div>
+<script src="/static/js/crypto/priceCalculation.js"></script>
 </body>
 </html>

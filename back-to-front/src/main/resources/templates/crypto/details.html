@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>О криптовалюте</title>
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/static/css/common.css">
     <script src="https://code.highcharts.com/stock/highstock.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
 </head>
@@ -57,7 +57,7 @@
                         </td>
                         <td class="text-center" th:text="${data.cryptoCurrency.getFormattedPriceAllFractionals()}"></td>
                         <td class="text-center">
-                            <a th:href="@{/crypto/{id}/buy(id=${data.cryptoCurrency.id})}" class="btn btn-primary">Купить</a>
+                            <a th:href="@{/crypto/{symbol}/buy(symbol=${data.cryptoCurrency.symbol})}" class="btn btn-primary">Купить</a>
                         </td>
                     </tr>
                     </tbody>
