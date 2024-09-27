@@ -45,8 +45,8 @@ public class AssetController {
         model.addAttribute("username", currentUser.getVisibleUserName());
         userApi.getUserByUsername(currentUser.getUsername())
                 .ifPresent(user -> {
-                    model.addAttribute("balance", user.getBalance());
-                    model.addAttribute("income", user.getIncome());
+                    model.addAttribute("balance", user.formattedBalance());
+                    model.addAttribute("income", user.formattedIncome());
                 });
 
         List<Asset> assets = assetService.getAssets(currentUser.getId());
@@ -76,8 +76,8 @@ public class AssetController {
         model.addAttribute("username", currentUser.getVisibleUserName());
         userApi.getUserByUsername(currentUser.getUsername())
                 .ifPresent(user -> {
-                    model.addAttribute("balance", user.getBalance());
-                    model.addAttribute("income", user.getIncome());
+                    model.addAttribute("balance", user.formattedBalance());
+                    model.addAttribute("income", user.formattedIncome());
                 });
 
         List<OperationHistoryItem> operationHistory = assetService.getOperationHistory(currentUser.getId());

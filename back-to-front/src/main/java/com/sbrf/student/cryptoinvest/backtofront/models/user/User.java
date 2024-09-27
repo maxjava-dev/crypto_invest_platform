@@ -5,8 +5,11 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 @Data
 @AllArgsConstructor
@@ -82,5 +85,21 @@ public class User implements UserDetails {
      */
     public String getVisibleUserName() {
         return fullName != null ? fullName : username;
+    }
+
+    /**
+     * @return форматированное представление баланса
+     */
+    public String formattedBalance() {
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
+        return formatter.format(new BigDecimal(balance));
+    }
+
+    /**
+     * @return форматированное представление прибыли
+     */
+    public String formattedIncome() {
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
+        return formatter.format(new BigDecimal(income));
     }
 }

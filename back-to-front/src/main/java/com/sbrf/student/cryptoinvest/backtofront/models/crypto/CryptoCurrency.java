@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -71,11 +72,20 @@ public class CryptoCurrency {
     private BigDecimal percentChange30d;
 
     /**
-     * @return строковое представление цены криптовалюты
+     * @return строковое представление цены криптовалюты (два знака после .)
      */
-    public String getFormattedPrice() {
+    public String getFormattedPriceTwoFractionals() {
         NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
         return formatter.format(price);
+    }
+
+    /**
+     * @return строковое представление цены криптовалюты (все знаки после . сохранены)
+     */
+    public String getFormattedPriceAllFractionals() {
+        DecimalFormat formatter = (DecimalFormat) DecimalFormat.getNumberInstance(Locale.US);
+        formatter.setMaximumFractionDigits(price.scale());
+        return "$" + formatter.format(price);
     }
 
     /**
