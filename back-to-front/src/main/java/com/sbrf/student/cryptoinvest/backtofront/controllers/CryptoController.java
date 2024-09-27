@@ -62,7 +62,7 @@ public class CryptoController {
                 });
 
         CryptoCurrencyInfoModel pageData = cryptoService.getCryptoCurrencyInfoModel(symbol);
-        List<OperationHistoryItem> operationHistory = assetService.getOperationHistory(currentUser.getId());
+        List<OperationHistoryItem> operationHistory = assetService.getOperationHistoryByCrypto(currentUser.getId(), pageData.getCryptoCurrency());
         model.addAttribute("data", pageData);
         model.addAttribute("showHistoryButton", !operationHistory.isEmpty());
         return "crypto/details";
@@ -81,13 +81,12 @@ public class CryptoController {
         CryptoCurrencyInfoModel currencyInfoModel = cryptoService.getCryptoCurrencyInfoModel(symbol);
         CryptoCurrency cryptoCurrency = currencyInfoModel.getCryptoCurrency();
         List<OperationHistoryItem> operationHistory = assetService.getOperationHistoryByCrypto(currentUser.getId(), cryptoCurrency);
-        System.out.println("operationHistory: " + operationHistory);
         model.addAttribute("operationHistory", operationHistory);
         return "crypto/history";
     }
 
-    @GetMapping("/{id}/buy")
-    public String cryptoBuyPage(Model model, @PathVariable String id) {
+    @GetMapping("/{symbol}/buy")
+    public String cryptoBuyPage(Model model, @PathVariable String symbol) {
         User currentUser = UserAuthentication.getCurrentUser();
         model.addAttribute("username", currentUser.getVisibleUserName());
         userApi.getUserByUsername(currentUser.getUsername())
@@ -95,17 +94,23 @@ public class CryptoController {
                     model.addAttribute("balance", user.formattedBalance());
                     model.addAttribute("income", user.formattedIncome());
                 });
+        CryptoCurrencyInfoModel currencyInfoModel = cryptoService.getCryptoCurrencyInfoModel(symbol);
+        CryptoCurrency cryptoCurrency = currencyInfoModel.getCryptoCurrency();
+        model.addAttribute("crypto", cryptoCurrency);
         return "crypto/buy";
     }
 
-    @PostMapping("/{id}/buy")
+    @PostMapping("/{symbol}/buy")
     public String cryptoPerformBuy(
             Model model,
-            @PathVariable String id,
+            @PathVariable String symbol,
             @ModelAttribute("cryptoOperationDTO") CryptoOperationDTO cryptoOperationDTO
     ) {
         User currentUser = UserAuthentication.getCurrentUser();
-        OperationStatus operationStatus = assetApi.performBuyCrypto(id, currentUser.getId().toString(), cryptoOperationDTO.getQuantity());
+        CryptoCurrencyInfoModel currencyInfoModel = cryptoService.getCryptoCurrencyInfoModel(symbol);
+        CryptoCurrency cryptoCurrency = currencyInfoModel.getCryptoCurrency();
+        String cryptoId = cryptoCurrency.getId().toString();
+        OperationStatus operationStatus = assetApi.performBuyCrypto(cryptoId, currentUser.getId().toString(), cryptoOperationDTO.getQuantity());
         if (operationStatus == OperationStatus.SUCCESS) {
             return "redirect:/assets/";
         } else {
@@ -113,12 +118,13 @@ public class CryptoController {
             model.addAttribute("balance", currentUser.getBalance());
             model.addAttribute("income", currentUser.getIncome());
             model.addAttribute("username", currentUser.getVisibleUserName());
+            model.addAttribute("crypto", cryptoCurrency);
             return "crypto/buy";
         }
     }
 
-    @GetMapping("/{id}/sell")
-    public String cryptoSellPage(Model model, @PathVariable String id) {
+    @GetMapping("/{symbol}/sell")
+    public String cryptoSellPage(Model model, @PathVariable String symbol) {
         User currentUser = UserAuthentication.getCurrentUser();
         model.addAttribute("username", currentUser.getVisibleUserName());
         userApi.getUserByUsername(currentUser.getUsername())
@@ -126,17 +132,23 @@ public class CryptoController {
                     model.addAttribute("balance", user.formattedBalance());
                     model.addAttribute("income", user.formattedIncome());
                 });
+        CryptoCurrencyInfoModel currencyInfoModel = cryptoService.getCryptoCurrencyInfoModel(symbol);
+        CryptoCurrency cryptoCurrency = currencyInfoModel.getCryptoCurrency();
+        model.addAttribute("crypto", cryptoCurrency);
         return "crypto/sell";
     }
 
-    @PostMapping("/{id}/sell")
+    @PostMapping("/{symbol}/sell")
     public String cryptoPerformSell(
             Model model,
-            @PathVariable String id,
+            @PathVariable String symbol,
             @ModelAttribute("cryptoOperationDTO") CryptoOperationDTO cryptoOperationDTO
     ) {
         User currentUser = UserAuthentication.getCurrentUser();
-        OperationStatus operationStatus = assetApi.performSellCrypto(id, currentUser.getId().toString(), cryptoOperationDTO.getQuantity());
+        CryptoCurrencyInfoModel currencyInfoModel = cryptoService.getCryptoCurrencyInfoModel(symbol);
+        CryptoCurrency cryptoCurrency = currencyInfoModel.getCryptoCurrency();
+        String cryptoId = cryptoCurrency.getId().toString();
+        OperationStatus operationStatus = assetApi.performSellCrypto(cryptoId, currentUser.getId().toString(), cryptoOperationDTO.getQuantity());
         if (operationStatus == OperationStatus.SUCCESS) {
             return "redirect:/assets/";
         } else {
@@ -144,6 +156,7 @@ public class CryptoController {
             model.addAttribute("balance", currentUser.getBalance());
             model.addAttribute("income", currentUser.getIncome());
             model.addAttribute("username", currentUser.getVisibleUserName());
+            model.addAttribute("crypto", cryptoCurrency);
             return "crypto/sell";
         }
     }

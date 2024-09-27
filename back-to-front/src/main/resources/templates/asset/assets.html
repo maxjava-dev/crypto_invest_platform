@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Активы</title>
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/static/css/common.css">
 </head>
 <body>
 <header>
@@ -52,7 +52,7 @@
                             <th class="text-center">Количество</th>
                             <th class="text-center">Стоимость на момент покупки (USD)</th>
                             <th class="text-center">Текущая стоимость (USD)</th>
-                            <th class="text-center">Прибыль или убыток USD(%)</th>
+                            <th class="text-center">Прибыль или убыток USD (%)</th>
                             <th class="text-center">Действия</th>
                         </tr>
                         </thead>
@@ -71,8 +71,8 @@
                                 th:text="${asset.getFormattedIncome()}"
                             ></td>
                             <td class="text-center col-md-3">
-                                <a th:href="@{/crypto/{id}/buy(id=${asset.crypto.id})}" class="btn btn-primary">Купить</a>
-                                <a th:href="@{/crypto/{id}/sell(id=${asset.crypto.id})}" class="btn btn-primary">Продать</a>
+                                <a th:href="@{/crypto/{symbol}/buy(symbol=${asset.crypto.symbol})}" class="btn btn-primary">Купить</a>
+                                <a th:href="@{/crypto/{symbol}/sell(symbol=${asset.crypto.symbol})}" class="btn btn-primary">Продать</a>
                                 <a th:href="@{/crypto/{symbol}(symbol=${asset.crypto.symbol})}" class="btn btn-primary">Детали</a>
                             </td>
                         </tr>
