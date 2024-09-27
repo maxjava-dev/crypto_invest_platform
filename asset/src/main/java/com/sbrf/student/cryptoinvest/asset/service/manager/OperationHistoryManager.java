@@ -4,8 +4,7 @@ import com.sbrf.student.cryptoinvest.asset.model.Asset;
 import com.sbrf.student.cryptoinvest.asset.model.OperationHistory;
 import com.sbrf.student.cryptoinvest.asset.model.OperationType;
 import com.sbrf.student.cryptoinvest.asset.repository.OperationHistoryRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +15,10 @@ import java.time.LocalDateTime;
  * Менеджер для работы с историей операций пользователя
  */
 @Service
+@Slf4j
 public class OperationHistoryManager {
 
     private final OperationHistoryRepository operationHistoryRepository;
-    private final Logger log = LoggerFactory.getLogger(OperationHistoryManager.class);
 
     @Autowired
     public OperationHistoryManager(OperationHistoryRepository operationHistoryRepository) {

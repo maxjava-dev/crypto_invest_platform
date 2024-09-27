@@ -30,8 +30,13 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
     @Override
     public CryptoServiceResponse fetchCryptoData(Long cryptoId) {
         String url = CRYPTOCURRENCY_SERVICE_URL + "/crypto/" + cryptoId;
+
+        log.info("Запрос данных о криптовалюте с ID: {}", cryptoId);
+
         try {
-            return restTemplate.getForObject(url, CryptoServiceResponse.class);
+            CryptoServiceResponse response = restTemplate.getForObject(url, CryptoServiceResponse.class);
+            log.info("Данные о криптовалюте с ID {} успешно получены.", cryptoId); // Логируем успешное получение данных
+            return response;
         } catch (RestClientException e) {
             log.error("Не удалось получить данные о криптовалюте с ID: {}", cryptoId, e);
             throw new RuntimeException("Не удалось получить данные о криптовалюте", e);

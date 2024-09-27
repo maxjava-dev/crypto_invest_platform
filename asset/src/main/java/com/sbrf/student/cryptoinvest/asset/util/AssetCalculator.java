@@ -1,11 +1,14 @@
 package com.sbrf.student.cryptoinvest.asset.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
  * Калькутор доходности актива
  */
+@Slf4j
 public class AssetCalculator {
 
     /**
@@ -16,8 +19,14 @@ public class AssetCalculator {
      * @return новая стоимость актива
      */
     public static BigDecimal calculateNewCost(BigDecimal oldCost, BigDecimal oldQuantity, BigDecimal newQuantity) {
-        return oldQuantity.compareTo(newQuantity) == 0 ? BigDecimal.ZERO :
-                oldCost.multiply(newQuantity).divide(oldQuantity, RoundingMode.HALF_UP);
+        log.debug("Расчет новой стоимости. Прежняя стоимость: {}, Прежнее количество: {}, Новое количество: {}", oldCost, oldQuantity, newQuantity);
+
+        BigDecimal newCost = oldQuantity.compareTo(newQuantity) == 0
+                ? BigDecimal.ZERO
+                : oldCost.multiply(newQuantity).divide(oldQuantity, RoundingMode.HALF_UP);
+
+        log.info("Новая стоимость рассчитана: {}", newCost);
+        return newCost;
     }
 
     /**
@@ -30,6 +39,11 @@ public class AssetCalculator {
      *         с добавлением новой стоимости актива.
      */
     public static BigDecimal calculateIncome(BigDecimal totalRevenue, BigDecimal oldCost, BigDecimal newCost) {
-        return totalRevenue.subtract(oldCost).add(newCost);
+        log.debug("Расчет доходности. Общая выручка: {}, Прежняя стоимость: {}, Новая стоимость: {}", totalRevenue, oldCost, newCost);
+
+        BigDecimal income = totalRevenue.subtract(oldCost).add(newCost);
+
+        log.info("Доходность рассчитана: {}", income);
+        return income;
     }
 }

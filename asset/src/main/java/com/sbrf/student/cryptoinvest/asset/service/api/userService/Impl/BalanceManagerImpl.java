@@ -3,6 +3,7 @@ package com.sbrf.student.cryptoinvest.asset.service.api.userService.Impl;
 import com.sbrf.student.cryptoinvest.asset.dto.AccountBalanceChangeDTO;
 import com.sbrf.student.cryptoinvest.asset.service.api.userService.BalanceManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BalanceManagerImpl implements BalanceManager {
 
     private final RestTemplate restTemplate;
@@ -32,10 +34,14 @@ public class BalanceManagerImpl implements BalanceManager {
         String incomeStr = income.toPlainString();
         AccountBalanceChangeDTO balanceChangeDTO = new AccountBalanceChangeDTO(userId, amountStr, incomeStr);
 
+        log.info("Обновление баланса пользователя с ID {}: сумма {}, доход {}", userId, amountStr, incomeStr);
+
         try {
             restTemplate.put(USERS_SERVICE_UPDATE_BALANCE_URL + USERS_SERVICE_UPDATE_BALANCE_SUFFIX,
                     balanceChangeDTO);
+            log.info("Баланс пользователя с ID {} успешно обновлён.", userId);
         } catch (RestClientException e) {
+            log.error("Ошибка при обновлении баланса пользователя с ID {}: {}", userId, e.getMessage(), e);
             throw new RuntimeException("Ошибка при обновлении баланса счета", e);
         }
     }
