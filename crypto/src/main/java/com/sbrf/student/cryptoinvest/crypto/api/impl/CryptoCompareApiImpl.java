@@ -27,12 +27,12 @@ public class CryptoCompareApiImpl implements CryptoCompareApi {
     private String apiKey;
 
     @Override
-    public CCHistoryResponse getHourlyHistoryData(String symbol, Long toTimeStamp) {
+    public CCHistoryResponse getHourlyHistoryData(String symbol, Long count, Long toTimeStamp) {
         log.info("getHourlyHistoryData called");
         try {
             Map<String, Object> params = new HashMap<>();
             params.put("symbol", symbol);
-            params.put("limit", 2000);
+            params.put("limit", count);
             params.put("key", apiKey);
             params.put("ts", toTimeStamp);
             ResponseEntity<CCHistoryResponse> response = restTemplate.getForEntity(
@@ -40,7 +40,7 @@ public class CryptoCompareApiImpl implements CryptoCompareApi {
                     CCHistoryResponse.class,
                     params
             );
-            log.info("getHourlyHistoryData response: " + response);
+            log.info("getHourlyHistoryData response code: " + response.getStatusCode());
             validateResponse(response);
             return response.getBody();
         } catch (Throwable e) {
@@ -56,4 +56,6 @@ public class CryptoCompareApiImpl implements CryptoCompareApi {
     }
 
     private final String BASE_API_URL = "https://min-api.cryptocompare.com/data/v2/histohour";
+
+    public static final long MAX_COUNT = 2000;
 }

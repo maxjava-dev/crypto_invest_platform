@@ -2,6 +2,7 @@ package com.sbrf.student.cryptoinvest.crypto.service.impl;
 
 import com.sbrf.student.cryptoinvest.crypto.api.CoinMarketCapApi;
 import com.sbrf.student.cryptoinvest.crypto.api.CryptoCompareApi;
+import com.sbrf.student.cryptoinvest.crypto.api.impl.CryptoCompareApiImpl;
 import com.sbrf.student.cryptoinvest.crypto.model.CryptoCurrency;
 import com.sbrf.student.cryptoinvest.crypto.model.HistoryItem;
 import com.sbrf.student.cryptoinvest.crypto.model.data.coinmarketcap.CoinMarketCapIdListElement;
@@ -9,7 +10,9 @@ import com.sbrf.student.cryptoinvest.crypto.model.data.coinmarketcap.CoinMarketC
 import com.sbrf.student.cryptoinvest.crypto.model.data.coinmarketcap.CoinMarketCapPriceQuote;
 import com.sbrf.student.cryptoinvest.crypto.model.data.cryptocompare.CCHistoryResponse;
 import com.sbrf.student.cryptoinvest.crypto.model.entity.CryptoCurrencyEntity;
+import com.sbrf.student.cryptoinvest.crypto.model.entity.HistoryItemEntity;
 import com.sbrf.student.cryptoinvest.crypto.repository.CryptoCurrencyRepository;
+import com.sbrf.student.cryptoinvest.crypto.repository.PriceHistoryRepository;
 import com.sbrf.student.cryptoinvest.crypto.service.CryptoCurrencyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +34,8 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
 
     private final CoinMarketCapApi coinMarketCapApi;
     private final CryptoCompareApi cryptoCompareApi;
-    private final CryptoCurrencyRepository repository;
+    private final CryptoCurrencyRepository cryptoCurrencyRepository;
+    private final PriceHistoryRepository priceHistoryRepository;
 
     private Map<Long, CryptoCurrencyEntity> metadataCache = null;
     private Map<String, CryptoCurrencyEntity> metadataCacheBySymbol = null;
@@ -110,12 +114,58 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
     @Override
     public List<HistoryItem> getHistoryData(String symbol) {
         log.info("getHistoryData called");
-
         var toTimeStamp = new Date().getTime();
+        var cachedItems = priceHistoryRepository.findAllBySymbolOrderByTimeAsc(symbol);
+        if (cachedItems.isEmpty()) {
+            log.info("getHistoryData cache is empty");
+            var dataFromApi = fetchHistoryData(symbol, 8000, toTimeStamp);
+            savePriceHistoryToCache(symbol, dataFromApi);
+            return dataFromApi;
+        } else {
+            var items = cachedItems.stream().map(entity -> {
+                        var item = new HistoryItem();
+                        item.setTime(entity.getTime());
+                        item.setPrice(entity.getPrice());
+                        return item;
+                    }
+            ).toList();
+            var result = new ArrayList<HistoryItem>(items);
+            var lastTs = cachedItems.get(cachedItems.size()-1).getTime() * 1000;
+            var firstTs = cachedItems.get(0).getTime();
+            log.info("getHistoryData got data from cache from {} to {}, count = {}", firstTs, lastTs, cachedItems.size());
+            long count = (toTimeStamp - lastTs) / 600000;
+            if (count > 0) {
+                var dataFromApi = fetchHistoryData(symbol, count, toTimeStamp);
+                var newDataFromApi = dataFromApi.stream().filter( item ->
+                        item.getTime() > lastTs / 1000
+                ).toList();
+                savePriceHistoryToCache(symbol, newDataFromApi);
+                result.addAll(newDataFromApi);
+            }
+            return result;
+        }
+    }
+
+    private void savePriceHistoryToCache(String symbol, List<HistoryItem> dataFromApi) {
+        var entities = dataFromApi.stream().map(item -> {
+                    var entity = new HistoryItemEntity();
+                    entity.setSymbol(symbol);
+                    entity.setTime(item.getTime());
+                    entity.setPrice(item.getPrice());
+                    return entity;
+                }
+        ).collect(Collectors.toList());
+        priceHistoryRepository.saveAll(entities);
+    }
+
+    private List<HistoryItem> fetchHistoryData(String symbol, long count, long toTimeStamp) {
+        log.info("fetchHistoryData called, count = {}, toTs = {}", count, toTimeStamp);
         var resultList = new ArrayList<List<HistoryItem>>();
-        final int DEPTH = 4;
-        for (int k = 1; k <= DEPTH; k++) {
-            var response = cryptoCompareApi.getHourlyHistoryData(symbol, toTimeStamp);
+        var remaining = count;
+        while (remaining > 0) {
+            var requestedCount = Math.min(remaining, CryptoCompareApiImpl.MAX_COUNT);
+            remaining = remaining - requestedCount;
+            var response = cryptoCompareApi.getHourlyHistoryData(symbol, requestedCount, toTimeStamp);
             var list = convertHistoryResponseToHistoryItemList(response);
             toTimeStamp = list.get(0).getTime();
             resultList.add(0, list);
@@ -123,6 +173,7 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
         var result = new ArrayList<HistoryItem>();
         resultList.forEach(result::addAll);
 
+        log.info("fetchHistoryData finished, count = {}", result.size());
         return result;
     }
 
@@ -145,7 +196,7 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
             metadataCache = new TreeMap<>();
             metadataCacheBySymbol = new TreeMap<>();
 
-            var entities = repository.findAll();
+            var entities = cryptoCurrencyRepository.findAll();
             if (entities.isEmpty()) {
                 log.info("fetching metadata from external api");
                 entities = fetchEntities();
@@ -199,7 +250,7 @@ public class CryptoCurrencyServiceImpl implements CryptoCurrencyService {
                 )
                 .toList();
 
-        return repository.saveAll(entities);
+        return cryptoCurrencyRepository.saveAll(entities);
     }
 
     private static final int CRYPTOCURRENCY_COUNT = 50;

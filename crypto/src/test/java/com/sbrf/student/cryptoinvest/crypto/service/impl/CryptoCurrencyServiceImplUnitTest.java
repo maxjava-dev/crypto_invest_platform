@@ -5,6 +5,7 @@ import com.sbrf.student.cryptoinvest.crypto.api.CryptoCompareApi;
 import com.sbrf.student.cryptoinvest.crypto.model.data.coinmarketcap.*;
 import com.sbrf.student.cryptoinvest.crypto.model.entity.CryptoCurrencyEntity;
 import com.sbrf.student.cryptoinvest.crypto.repository.CryptoCurrencyRepository;
+import com.sbrf.student.cryptoinvest.crypto.repository.PriceHistoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -32,12 +33,15 @@ class CryptoCurrencyServiceImplUnitTest {
     @Mock
     CryptoCurrencyRepository repository;
 
+    @Mock
+    PriceHistoryRepository priceRepository;
+
     private CryptoCurrencyServiceImpl underTest;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        underTest = new CryptoCurrencyServiceImpl(coinMarketCapApi, cryptoCompareApi, repository);
+        underTest = new CryptoCurrencyServiceImpl(coinMarketCapApi, cryptoCompareApi, repository, priceRepository);
         when(coinMarketCapApi.getIdList(50)).thenReturn(
                    new CoinMarketCapIdList(
                            List.of(

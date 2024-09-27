@@ -40,7 +40,7 @@ public class CoinMarketCapApiImpl implements CoinMarketCapApi {
                     CoinMarketCapMetadata.class,
                     getIdsString(ids)
             );
-            log.info("getMetadata response: "+response);
+            log.info("getMetadata response code: "+response.getStatusCode());
             validateResponse(response);
             return response.getBody();
 
@@ -66,7 +66,7 @@ public class CoinMarketCapApiImpl implements CoinMarketCapApi {
                     CoinMarketCapIdList.class,
                     params
             );
-            log.info("getIdList response: "+response);
+            log.info("getIdList response code: "+response.getStatusCode());
             validateResponse(response);
             return response.getBody();
 
@@ -88,7 +88,7 @@ public class CoinMarketCapApiImpl implements CoinMarketCapApi {
                     CoinMarketCapPriceList.class,
                     getIdsString(ids)
             );
-            log.info("getPriceList response: "+response);
+            log.info("getPriceList response code: "+response.getStatusCode());
             validateResponse(response);
             return response.getBody();
         } catch (Throwable e) {
