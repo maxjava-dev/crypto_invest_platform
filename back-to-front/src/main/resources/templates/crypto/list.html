@@ -29,8 +29,8 @@
         <input type="submit" class="btn btn-primary" value="Выход"/>
     </form>
     <div class="mt-2">
-        <p>Баланс: <span th:text="${balance}"></span> USD</p>
-        <p>Прибыль: <span th:text="${income}"></span> USD</p>
+        <p>Баланс: <span th:text="${balance}"></span></p>
+        <p>Прибыль: <span th:text="${income}"></span></p>
         <a href="/account/topup" class="btn btn-primary text-center">Пополнить</a>
     </div>
 </div>
@@ -60,7 +60,7 @@
                             <span th:text="${crypto.name}"></span>
                             <span style="color: gray" th:text="${crypto.symbol}"></span>
                         </td>
-                        <td class="text-center" th:text="${crypto.getFormattedPrice()}"></td>
+                        <td class="text-center" th:text="${crypto.getFormattedPriceTwoFractionals()}"></td>
                         <td class="text-center"
                             th:classappend="${crypto.percentChange1h.signum() > 0 ? 'text-success' : 'text-danger'}"
                             th:text="${crypto.getFormattedPercentChange1h()}"></td>

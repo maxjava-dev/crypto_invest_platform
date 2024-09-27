@@ -106,6 +106,28 @@ public class AssetApi {
         }
     }
 
+    /**
+     * Получить историю операций клиента по криптовалюте.
+     * @param userId ID клиента
+     * @param cryptoId ID криптовалюты
+     * @return опциональный список элементов истории операции
+     */
+    public Optional<List<OperationHistoryItem>> getOperationHistoryByCrypto(Long userId, Long cryptoId) {
+        try {
+            ResponseEntity<OperationHistoryItem[]> response = restTemplate.getForEntity(
+                    BASE_ASSETS_URL + "/operations/user/" + userId + "/crypto/" + cryptoId, OperationHistoryItem[].class
+            );
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return Optional.of(Arrays.stream(response.getBody()).toList());
+            } else {
+                return Optional.empty();
+            }
+        } catch (Throwable e) {
+            log.error(e.toString());
+            return Optional.empty();
+        }
+    }
+
     private OperationStatus performCryptoOperation(String operationType, String cryptoId, String userId, String quantity) {
         try {
             HttpHeaders headers = new HttpHeaders();

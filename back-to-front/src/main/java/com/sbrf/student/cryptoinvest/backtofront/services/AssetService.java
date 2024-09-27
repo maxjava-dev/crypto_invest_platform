@@ -3,10 +3,12 @@ package com.sbrf.student.cryptoinvest.backtofront.services;
 import com.sbrf.student.cryptoinvest.backtofront.api.AssetApi;
 import com.sbrf.student.cryptoinvest.backtofront.models.asset.Asset;
 import com.sbrf.student.cryptoinvest.backtofront.models.asset.OperationHistoryItem;
+import com.sbrf.student.cryptoinvest.backtofront.models.crypto.CryptoCurrency;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Сервис для получения данных об активах
@@ -39,5 +41,17 @@ public class AssetService {
         } else {
             throw new RuntimeException("Error getting all user operationHistory");
         }
+    }
+
+    /**
+     * @return история операций клиента по криптовалюте
+     */
+    public List<OperationHistoryItem> getOperationHistoryByCrypto(Long userId, CryptoCurrency cryptoCurrency) {
+        var operationHistory = assetApi.getOperationHistoryByCrypto(userId, cryptoCurrency.getId());
+        return operationHistory
+                .map(history -> history.stream()
+                   .peek(item -> item.setCrypto(cryptoCurrency))
+                   .collect(Collectors.toList()))
+                .orElseThrow(() -> new RuntimeException("Error getting user operationHistory by crypto"));
     }
 }

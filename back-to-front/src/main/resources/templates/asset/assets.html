@@ -29,8 +29,8 @@
         <input type="submit" class="btn btn-primary" value="Выход"/>
     </form>
     <div class="mt-2">
-        <p>Баланс: <span th:text="${balance}"></span> USD</p>
-        <p>Прибыль: <span th:text="${income}"></span> USD</p>
+        <p>Баланс: <span th:text="${balance}"></span></p>
+        <p>Прибыль: <span th:text="${income}"></span></p>
         <a href="/account/topup" class="btn btn-primary text-center">Пополнить</a>
     </div>
 </div>
@@ -52,16 +52,16 @@
                             <th class="text-center">Количество</th>
                             <th class="text-center">Стоимость на момент покупки (USD)</th>
                             <th class="text-center">Текущая стоимость (USD)</th>
-                            <th class="text-center">Прибыль или убыток (USD)</th>
+                            <th class="text-center">Прибыль или убыток USD(%)</th>
                             <th class="text-center">Действия</th>
                         </tr>
                         </thead>
                         <tbody th:unless="${assets.isEmpty()}">
                         <tr th:each="asset, iterator : ${assets}">
-                            <td class="text-center">
+                            <td class="text-center" style="width: 150px">
                                 <img th:src="${asset.crypto.logo}" width="25" height="25">
                                 <span th:text="${asset.crypto.name}"></span>
-                                <span th:text="${asset.crypto.symbol}"></span>
+                                <span style="color: gray" th:text="${asset.crypto.symbol}"></span>
                             </td>
                             <td class="text-center" th:text="${asset.quantity}"></td>
                             <td class="text-center" th:text="${#numbers.formatDecimal(asset.cost, 1, 'DEFAULT', 2, 'POINT')}"></td>
